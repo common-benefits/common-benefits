@@ -1,0 +1,88 @@
+---
+import { SchemaLoader } from "@/lib/schema/schema-loader";
+import { TableGenerator } from "@/lib/schema/table-generator";
+import { getDocPath, findSchema } from "@/lib/protocol-catalog";
+
+export interface Props {
+  schema: string;
+}
+
+const { schema } = Astro.props;
+
+if (!findSchema(schema)) {
+  throw new Error(
+    `<SchemaTable schema="${schema}" />: schema is not registered in protocol-catalog.ts. ` +
+      `Add an entry to src/lib/protocol-catalog.ts.`
+  );
+}
+
+const parsed = SchemaLoader.loadSchemaByName(schema);
+const isEnum = SchemaLoader.isEnumSchema(parsed);
+const isObject = SchemaLoader.isObjectSchema(parsed);
+const propertyRows = isObject ? TableGenerator.generatePropertyRows(parsed, getDocPath) : [];
+const enumRows = isEnum ? TableGenerator.generateEnumRows(parsed) : [];
+
+// For enums, the bulleted ``- `value`: description`` lines in the description are
+// rendered in the table below — strip them from the leading prose so we don't
+// show the same info twice.
+const description =
+  isEnum && parsed.description
+    ? parsed.description
+        .split("\n")
+        .filter((line) => !/^\s*-\s*`[^`]+`\s*:/.test(line))
+        .join("\n")
+        .trim()
+    : parsed.description;
+---
+
+{description && <p class="schema-description" set:html={description} />}
+
+{
+  isEnum && (
+    <table>
+      <thead>
+        <tr>
+          <th>Value</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {enumRows.map((row) => (
+          <tr>
+            <td>
+              <code>{row.value}</code>
+            </td>
+            <td>{row.description}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+{
+  isObject && (
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Type</th>
+          <th>Required</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {propertyRows.map((row) => (
+          <tr>
+            <td>
+              <code>{row.property}</code>
+            </td>
+            <td set:html={row.type} />
+            <td>{row.required ? "Yes" : "No"}</td>
+            <td>{row.description}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}

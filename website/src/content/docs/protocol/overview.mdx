@@ -1,0 +1,23 @@
+---
+title: Protocol overview
+description: An overview of the CommonBenefits protocol.
+---
+
+CommonBenefits is a TypeSpec-defined protocol for describing benefits programs. It provides reusable types, fields, filters, and response shapes that any benefits API can implement.
+
+Each entry shows:
+
+- A **table** of the schema's properties (or enum values), with cross-links to related schemas.
+- An **Example** generated from the TypeSpec `@example` decorators (using [`openapi-sampler`](https://github.com/Redocly/openapi-sampler) to fill in references).
+- The compiled **JSON Schema** YAML.
+- The original **TypeSpec** source (when the schema is defined in `lib/core`).
+
+## Sections
+
+- [String](/protocol/types/string), [Numeric](/protocol/types/numeric), [Date](/protocol/types/date), [Other](/protocol/types/other) — primitive scalar types used throughout the protocol.
+- Fields: [Address](/protocol/fields/address), [Phone](/protocol/fields/phone), [Email](/protocol/fields/email), [Name](/protocol/fields/name), [Money](/protocol/fields/money), [File](/protocol/fields/file), [Event](/protocol/fields/event), [System metadata](/protocol/fields/metadata), [Custom fields](/protocol/fields/custom-field).
+- Filters: [Operators](/protocol/filters/base), [String](/protocol/filters/string), [Numeric](/protocol/filters/numeric), [Date](/protocol/filters/date), [Money](/protocol/filters/money).
+- Responses: [Error](/protocol/responses/error), [Success](/protocol/responses/success).
+- [Pagination](/protocol/pagination) and [Sorting](/protocol/sorting) — narrative explanations of those conventions.
+
+To add a new schema, define it in `lib/core/lib/`, register it in `website/src/lib/protocol-catalog.ts` (under an existing page or a new one), and the corresponding page is generated automatically.

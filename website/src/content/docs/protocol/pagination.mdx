@@ -1,0 +1,27 @@
+---
+title: Pagination
+description: Conventions and models for paginated routes.
+---
+
+import SchemaTable from "@/components/SchemaTable.astro";
+import SchemaFormatTabs from "@/components/SchemaFormatTabs.astro";
+
+CommonBenefits routes that return collections use a 1-indexed page number and a per-page size. Routes that accept pagination as query parameters use [`PaginatedQueryParams`](#paginatedqueryparams); routes that take pagination in the request body use [`PaginatedBodyParams`](#paginatedbodyparams). The matching [`PaginatedResultsInfo`](#paginatedresultsinfo) envelope is returned in response bodies.
+
+## PaginatedQueryParams
+
+<SchemaTable schema="PaginatedQueryParams" />
+
+<SchemaFormatTabs schema="PaginatedQueryParams" />
+
+## PaginatedBodyParams
+
+<SchemaTable schema="PaginatedBodyParams" />
+
+<SchemaFormatTabs schema="PaginatedBodyParams" />
+
+## PaginatedResultsInfo
+
+<SchemaTable schema="PaginatedResultsInfo" />
+
+<SchemaFormatTabs schema="PaginatedResultsInfo" />

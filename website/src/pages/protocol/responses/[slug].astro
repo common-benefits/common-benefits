@@ -1,0 +1,35 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import SchemaTable from "@/components/SchemaTable.astro";
+import SchemaFormatTabs from "@/components/SchemaFormatTabs.astro";
+import { bySlug, type SchemaEntry } from "@/lib/protocol-catalog";
+
+export interface Props {
+  page: string;
+  title: string;
+  description?: string;
+  category?: string;
+  schemas: SchemaEntry[];
+  narrative?: boolean;
+}
+
+export const getStaticPaths = async () => bySlug("responses");
+---
+
+<StarlightPage
+  frontmatter={{
+    title: Astro.props.title,
+    description: Astro.props.description ?? `${Astro.props.title} reference.`,
+  }}
+>
+  {Astro.props.description && <p>{Astro.props.description}</p>}
+  {
+    Astro.props.schemas.map((entry) => (
+      <section>
+        <h2 id={entry.schema.toLowerCase()}>{entry.schema}</h2>
+        <SchemaTable schema={entry.schema} />
+        <SchemaFormatTabs schema={entry.schema} />
+      </section>
+    ))
+  }
+</StarlightPage>

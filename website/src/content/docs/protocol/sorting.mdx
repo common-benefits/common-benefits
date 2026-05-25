@@ -1,0 +1,33 @@
+---
+title: Sorting
+description: Conventions and models for sorted responses.
+---
+
+import SchemaTable from "@/components/SchemaTable.astro";
+import SchemaFormatTabs from "@/components/SchemaFormatTabs.astro";
+
+Sorting is layered on top of pagination. A request specifies the field to sort by and a direction; the response carries the resolved sort key back so clients can verify or display it.
+
+## SortQueryParams
+
+<SchemaTable schema="SortQueryParams" />
+
+<SchemaFormatTabs schema="SortQueryParams" />
+
+## SortBodyParams
+
+<SchemaTable schema="SortBodyParams" />
+
+<SchemaFormatTabs schema="SortBodyParams" />
+
+## SortedResultsInfo
+
+<SchemaTable schema="SortedResultsInfo" />
+
+<SchemaFormatTabs schema="SortedResultsInfo" />
+
+## SortOrder
+
+<SchemaTable schema="SortOrder" />
+
+<SchemaFormatTabs schema="SortOrder" />

@@ -1,0 +1,7 @@
+dist/
+node_modules/
+.astro/
+.wrangler/
+tsp-output/
+public/schemas/
+public/openapi/

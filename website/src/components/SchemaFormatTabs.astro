@@ -1,0 +1,53 @@
+---
+import { Tabs, TabItem, Code } from "@astrojs/starlight/components";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { Paths } from "@/lib/paths";
+import { findSchema } from "@/lib/protocol-catalog";
+import { generateSchemaExample } from "@/lib/schema/example-generator";
+import { SchemaLoader } from "@/lib/schema/schema-loader";
+
+export interface Props {
+  schema: string;
+}
+
+const { schema } = Astro.props;
+const found = findSchema(schema);
+
+if (!found) {
+  throw new Error(
+    `<SchemaFormatTabs schema="${schema}" />: schema is not registered in protocol-catalog.ts. ` +
+      `Add an entry to src/lib/protocol-catalog.ts.`
+  );
+}
+
+const source = found.entry.source;
+const schemaYaml = SchemaLoader.loadRawYamlByName(schema);
+const typeSpecSource =
+  source.kind === "typespec"
+    ? readFileSync(join(Paths.REPO_ROOT, source.sourcePath), "utf-8")
+    : null;
+
+// openapi-sampler can choke on certain edge cases; surface a placeholder
+// rather than failing the whole page build.
+const example = await generateSchemaExample(schema).catch(
+  (error) =>
+    `// Failed to generate example: ${error instanceof Error ? error.message : String(error)}`
+);
+---
+
+<Tabs>
+  <TabItem label="Example">
+    <Code code={example} lang="json" />
+  </TabItem>
+  <TabItem label="JSON Schema">
+    <Code code={schemaYaml} lang="yaml" />
+  </TabItem>
+  {
+    typeSpecSource && (
+      <TabItem label="TypeSpec">
+        <Code code={typeSpecSource} lang="typespec" />
+      </TabItem>
+    )
+  }
+</Tabs>
