@@ -11,6 +11,7 @@
     { "type": "fix", "section": "Bug Fixes" },
     { "type": "docs", "section": "Documentation" },
     { "type": "refactor", "section": "Refactoring" },
+    { "type": "build", "section": "Build System" },
     { "type": "chore", "section": "Miscellaneous", "hidden": true },
     { "type": "ci", "section": "Miscellaneous", "hidden": true },
     { "type": "test", "section": "Miscellaneous", "hidden": true }
