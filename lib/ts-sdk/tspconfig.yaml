@@ -1,0 +1,5 @@
+emit:
+  - "typespec-zod"
+options:
+  "typespec-zod":
+    emitter-output-dir: "{project-root}/src/generated"

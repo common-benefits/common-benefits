@@ -1,0 +1,71 @@
+{
+  "name": "@common-benefits/sdk",
+  "version": "0.0.1",
+  "description": "The CommonBenefits TypeScript SDK (Zod schemas generated from TypeSpec)",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/**/*.spec.*"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "sdk",
+    "typescript",
+    "common-benefits",
+    "protocol",
+    "zod"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist tsp-output src/generated",
+    "build": "tsc -p .",
+    "typespec": "tsp compile lib/main.tsp",
+    "prepare": "pnpm run build",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . && tsp format lib",
+    "check:lint": "eslint",
+    "check:format": "prettier --check . && tsp format lib --check",
+    "check:types": "tsc --noEmit",
+    "checks": "pnpm run check:lint && pnpm run check:format && pnpm run check:types",
+    "ci": "pnpm run checks && pnpm run build && pnpm run typespec && pnpm run test",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@common-benefits/core": "workspace:*",
+    "@eslint/js": "catalog:",
+    "@types/node": "catalog:",
+    "@typespec/compiler": "catalog:",
+    "@typespec/http": "catalog:",
+    "@typespec/json-schema": "catalog:",
+    "@typespec/openapi": "catalog:",
+    "@typespec/openapi3": "catalog:",
+    "@typespec/rest": "catalog:",
+    "@typespec/versioning": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "typespec-zod": "catalog:",
+    "vitest": "catalog:"
+  }
+}
