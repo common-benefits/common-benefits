@@ -1,0 +1,18 @@
+core:
+  - changed-files:
+      - any-glob-to-any-file: lib/core/**
+
+ts-sdk:
+  - changed-files:
+      - any-glob-to-any-file: lib/ts-sdk/**
+
+website:
+  - changed-files:
+      - any-glob-to-any-file: website/**
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - pnpm-lock.yaml
+          - pnpm-workspace.yaml
+          - "**/package.json"

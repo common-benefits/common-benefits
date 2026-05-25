@@ -1,0 +1,39 @@
+name: "CI - TS SDK: Run Checks"
+
+on:
+  workflow_call:
+  pull_request:
+    paths:
+      - lib/ts-sdk/**
+      - lib/core/**
+      - .github/workflows/ci-lib-ts-sdk.yml
+      - pnpm-workspace.yaml
+      - pnpm-lock.yaml
+
+defaults:
+  run:
+    working-directory: ./lib/ts-sdk
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22.x"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: .
+
+      - name: Run CI script
+        run: pnpm --filter @common-benefits/sdk run ci
+        working-directory: .

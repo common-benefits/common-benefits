@@ -1,0 +1,51 @@
+name: "CD - Publish @common-benefits/sdk"
+
+on:
+  push:
+    tags:
+      - "@common-benefits/sdk@*"
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref (tag or commit) to publish from"
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: npm-sdk
+      url: https://www.npmjs.com/package/@common-benefits/sdk
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22.x"
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run checks
+        run: pnpm --filter @common-benefits/sdk run checks
+
+      - name: Build
+        run: pnpm --filter @common-benefits/sdk run build
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm --filter @common-benefits/sdk publish --access public --no-git-checks

@@ -1,0 +1,27 @@
+name: "Release Please"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run release-please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          manifest-file: .release-please-manifest.json
+          config-file: release-please-config.json
+    outputs:
+      core_released: ${{ steps.release.outputs['lib/core--release_created'] }}
+      core_tag: ${{ steps.release.outputs['lib/core--tag_name'] }}
+      sdk_released: ${{ steps.release.outputs['lib/ts-sdk--release_created'] }}
+      sdk_tag: ${{ steps.release.outputs['lib/ts-sdk--tag_name'] }}
