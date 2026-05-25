@@ -1,0 +1,45 @@
+# Node modules
+node_modules/
+
+# pnpm
+.pnpm-store/
+.pnpm-debug.log
+
+# Build output
+dist/
+tsp-output/
+
+# Website built schema artifacts (regenerated from lib/core on every build)
+website/public/schemas/yaml/
+website/public/openapi/
+
+# typespec-zod generated SDK code (regenerated on each build)
+lib/ts-sdk/src/generated/*
+!lib/ts-sdk/src/generated/.gitkeep
+
+# Astro
+.astro/
+
+# Cloudflare
+.wrangler/
+
+# AI
+.cursor
+.claude/settings.local.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/

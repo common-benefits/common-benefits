@@ -1,0 +1,12 @@
+{
+  "name": "common-benefits",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "ci:core": "pnpm --filter @common-benefits/core run ci",
+    "ci:sdk": "pnpm --filter @common-benefits/sdk run ci",
+    "ci:website": "pnpm --filter @common-benefits/website run ci",
+    "ci": "pnpm run ci:core && pnpm run ci:sdk && pnpm run ci:website"
+  }
+}

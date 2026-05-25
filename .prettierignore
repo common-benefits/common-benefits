@@ -1,0 +1,8 @@
+dist/
+node_modules/
+tsp-output/
+.astro/
+.wrangler/
+pnpm-lock.yaml
+**/*.tsp
+**/CHANGELOG.md
