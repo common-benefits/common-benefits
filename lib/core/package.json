@@ -1,0 +1,61 @@
+{
+  "name": "@common-benefits/core",
+  "version": "0.0.1",
+  "description": "TypeSpec library defining the CommonBenefits protocol",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "typespec": "./lib/main.tsp",
+      "default": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/src/**/*.js",
+    "dist/src/**/*.d.ts",
+    "lib/**/*.tsp"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "clean": "rm -rf dist tsp-output",
+    "build": "tsc -p .",
+    "watch": "tsc -p . --watch",
+    "typespec": "tsp compile lib/main.tsp",
+    "prepare": "pnpm run build",
+    "lint": "eslint . --fix",
+    "format": "prettier --write . && tsp format lib",
+    "check:lint": "eslint",
+    "check:format": "prettier --check . && tsp format lib --check",
+    "check:types": "tsc --noEmit",
+    "checks": "pnpm run check:lint && pnpm run check:format && pnpm run check:types",
+    "ci": "pnpm run checks && pnpm run build && pnpm run typespec"
+  },
+  "keywords": [
+    "typespec",
+    "common-benefits",
+    "protocol"
+  ],
+  "peerDependencies": {
+    "@typespec/compiler": "catalog:",
+    "@typespec/http": "catalog:",
+    "@typespec/json-schema": "catalog:",
+    "@typespec/openapi": "catalog:",
+    "@typespec/openapi3": "catalog:",
+    "@typespec/rest": "catalog:",
+    "@typespec/versioning": "catalog:"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  }
+}
