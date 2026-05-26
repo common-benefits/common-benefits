@@ -1,12 +1,7 @@
 ---
-export interface Props {
-  label: string;
-  items: Array<{
-    label: string;
-    href: string;
-    external?: boolean;
-  }>;
-}
+import type { NavMenuGroup } from "@/config/nav";
+
+export type Props = NavMenuGroup;
 
 const { label, items } = Astro.props;
 const id = label.toLowerCase().replace(/\s+/g, "-");
@@ -245,9 +240,7 @@ const id = label.toLowerCase().replace(/\s+/g, "-");
       const closeOtherDropdowns = () => {
         document.querySelectorAll(".nav-menu-item.open").forEach((item) => {
           if (item !== navMenuItem) {
-            const otherButton = item.querySelector(
-              ".nav-menu-button",
-            ) as HTMLButtonElement;
+            const otherButton = item.querySelector(".nav-menu-button") as HTMLButtonElement;
             item.classList.remove("open");
             otherButton?.setAttribute("aria-expanded", "false");
           }
@@ -326,9 +319,7 @@ const id = label.toLowerCase().replace(/\s+/g, "-");
       const target = e.target as Element;
       if (target && !target.closest(".nav-menu-item")) {
         document.querySelectorAll(".nav-menu-item.open").forEach((item) => {
-          const button = item.querySelector(
-            ".nav-menu-button",
-          ) as HTMLButtonElement;
+          const button = item.querySelector(".nav-menu-button") as HTMLButtonElement;
           item.classList.remove("open");
           button?.setAttribute("aria-expanded", "false");
         });
@@ -339,9 +330,7 @@ const id = label.toLowerCase().replace(/\s+/g, "-");
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         document.querySelectorAll(".nav-menu-item.open").forEach((item) => {
-          const button = item.querySelector(
-            ".nav-menu-button",
-          ) as HTMLButtonElement;
+          const button = item.querySelector(".nav-menu-button") as HTMLButtonElement;
           item.classList.remove("open");
           button?.setAttribute("aria-expanded", "false");
         });

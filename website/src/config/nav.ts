@@ -1,7 +1,15 @@
-import type { Props as NavMenuItem } from "@/components/NavMenuItem.astro";
+/** A dropdown menu rendered in the site header. */
+export interface NavMenuGroup {
+  label: string;
+  items: Array<{
+    label: string;
+    href: string;
+    external?: boolean;
+  }>;
+}
 
 /** Dropdown menus rendered in the site header. */
-export const navMenuItems: NavMenuItem[] = [
+export const navMenuItems: NavMenuGroup[] = [
   {
     label: "Learn",
     items: [
