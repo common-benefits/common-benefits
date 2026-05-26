@@ -14,6 +14,7 @@ import "./sorting.tsp";
 import "./filters/index.tsp";
 import "./models/index.tsp";
 import "./responses/index.tsp";
+import "./api.tsp";
 
 @Versioning.versioned(Versions)
 namespace CommonBenefits;
