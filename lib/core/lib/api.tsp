@@ -5,20 +5,8 @@ import "@typespec/openapi";
 using TypeSpec.Http;
 using TypeSpec.OpenAPI;
 
-/** The base OpenAPI specification for a CommonBenefits API.
- *
- * To be compliant with the CommonBenefits protocol, an implementation must
- * implement every route tagged `required` in this specification.
- */
+/** The base OpenAPI specification for a CommonBenefits API. */
 @service(#{ title: "CommonBenefits Base API" })
-@tagMetadata(
-  "required",
-  #{ description: "Endpoints that MUST be implemented by all CommonBenefits APIs" }
-)
-@tagMetadata(
-  "optional",
-  #{ description: "Endpoints that MAY be implemented by CommonBenefits APIs" }
-)
 @tagMetadata("Households", #{ description: "Endpoints for managing household eligibility data" })
 @tagMetadata("Applications", #{ description: "Endpoints for submitting applications for benefits" })
 @tagMetadata(
@@ -40,13 +28,8 @@ namespace CommonBenefits.API;
 namespace Households {
   alias Router = Routes.Households;
 
-  @tag("required")
   op create is Router.create;
-
-  @tag("required")
   op read is Router.read;
-
-  @tag("required")
   op listEnrollments is Router.listEnrollments;
 }
 
@@ -59,7 +42,6 @@ namespace Households {
 namespace Applications {
   alias Router = Routes.Applications;
 
-  @tag("required")
   op submit is Router.submit;
 }
 
@@ -72,10 +54,7 @@ namespace Applications {
 namespace Packages {
   alias Router = Routes.Packages;
 
-  @tag("required")
   op list is Router.list;
-
-  @tag("required")
   op read is Router.read;
 }
 
@@ -88,9 +67,6 @@ namespace Packages {
 namespace Programs {
   alias Router = Routes.Programs;
 
-  @tag("required")
   op list is Router.list;
-
-  @tag("required")
   op read is Router.read;
 }
