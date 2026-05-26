@@ -750,6 +750,26 @@ export const pages: PageEntry[] = [
         schema: "Success",
         source: { kind: "typespec", sourcePath: "lib/core/lib/responses/success.tsp" },
       },
+      {
+        schema: "Ok",
+        source: { kind: "typespec", sourcePath: "lib/core/lib/responses/success.tsp" },
+      },
+      {
+        schema: "Created",
+        source: { kind: "typespec", sourcePath: "lib/core/lib/responses/success.tsp" },
+      },
+      {
+        schema: "Paginated",
+        source: { kind: "typespec", sourcePath: "lib/core/lib/responses/success.tsp" },
+      },
+      {
+        schema: "Filtered",
+        source: { kind: "typespec", sourcePath: "lib/core/lib/responses/success.tsp" },
+      },
+      {
+        schema: "Sorted",
+        source: { kind: "typespec", sourcePath: "lib/core/lib/responses/success.tsp" },
+      },
     ],
   },
 

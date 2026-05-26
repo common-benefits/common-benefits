@@ -99,6 +99,61 @@ export class SchemaLoader {
     return readFileSync(join(Paths.SCHEMAS_DIR, `${schemaName}.yaml`), "utf-8");
   }
 
+  /**
+   * Like `loadSchemaByName`, but resolves any top-level `allOf` `$ref`s by
+   * inlining the referenced schema's `properties` and `required`. Nested
+   * `$ref`s inside properties stay intact so the table can still link to
+   * them as cross-references.
+   *
+   * Used for models that extend a base via TypeSpec `extends` (which emits
+   * as `allOf: [$ref]`) — e.g., `*Status` wrappers extending
+   * `ExtensibleEnumT<T>`, or `Ok` / `Paginated` extending `Success`.
+   */
+  static loadResolvedSchemaByName(schemaName: string): JsonSchema {
+    return this.resolveTopLevelAllOf(this.loadSchemaByName(schemaName));
+  }
+
+  /**
+   * Like `loadRawYamlByName`, but for schemas with top-level `allOf` it
+   * returns the merged form serialized to YAML. Schemas without `allOf`
+   * return the original file contents verbatim so formatting is preserved.
+   */
+  static loadResolvedYamlByName(schemaName: string): string {
+    const original = this.loadSchemaByName(schemaName);
+    if (!Array.isArray(original.allOf)) return this.loadRawYamlByName(schemaName);
+    const resolved = this.resolveTopLevelAllOf(original);
+    return yaml.dump(resolved, { lineWidth: -1 });
+  }
+
+  private static resolveTopLevelAllOf(schema: JsonSchema): JsonSchema {
+    if (!Array.isArray(schema.allOf)) return schema;
+
+    const merged: JsonSchema = {
+      ...schema,
+      properties: { ...(schema.properties ?? {}) },
+      required: [...(schema.required ?? [])],
+    };
+
+    for (const part of schema.allOf) {
+      let resolved: JsonSchema = part;
+      if (part.$ref) {
+        const refFile = part.$ref.replace(/^.*[\\/]/, "");
+        try {
+          resolved = this.resolveTopLevelAllOf(this.loadFromFile(join(Paths.SCHEMAS_DIR, refFile)));
+        } catch {
+          continue;
+        }
+      }
+      Object.assign(merged.properties!, resolved.properties ?? {});
+      for (const f of resolved.required ?? []) {
+        if (!merged.required!.includes(f)) merged.required!.push(f);
+      }
+    }
+
+    delete merged.allOf;
+    return merged;
+  }
+
   static isEnumSchema(schema: JsonSchema): boolean {
     return Boolean(schema.enum);
   }

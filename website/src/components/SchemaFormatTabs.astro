@@ -23,7 +23,7 @@ if (!found) {
 }
 
 const source = found.entry.source;
-const schemaYaml = SchemaLoader.loadRawYamlByName(schema);
+const schemaYaml = SchemaLoader.loadResolvedYamlByName(schema);
 const typeSpecSource =
   source.kind === "typespec"
     ? (extractTypeSpecDeclaration(
