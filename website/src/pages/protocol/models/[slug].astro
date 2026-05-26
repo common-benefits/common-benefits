@@ -1,5 +1,6 @@
 ---
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
 import SchemaTable from "@/components/SchemaTable.astro";
 import SchemaFormatTabs from "@/components/SchemaFormatTabs.astro";
 import { bySlug, type SchemaEntry } from "@/lib/protocol-catalog";
@@ -21,12 +22,19 @@ export const getStaticPaths = async () => bySlug("models");
     title: Astro.props.title,
     description: Astro.props.description ?? `${Astro.props.title} reference.`,
   }}
+  headings={Astro.props.schemas.map((entry) => ({
+    depth: 2,
+    slug: entry.schema.toLowerCase(),
+    text: entry.schema,
+  }))}
 >
   {Astro.props.description && <p>{Astro.props.description}</p>}
   {
     Astro.props.schemas.map((entry) => (
       <section>
-        <h2 id={entry.schema.toLowerCase()}>{entry.schema}</h2>
+        <AnchorHeading level={2} id={entry.schema.toLowerCase()}>
+          {entry.schema}
+        </AnchorHeading>
         <SchemaTable schema={entry.schema} />
         <SchemaFormatTabs schema={entry.schema} />
       </section>
