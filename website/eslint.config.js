@@ -13,6 +13,13 @@ export default [
   ...tseslint.configs.recommended,
   ...eslintPluginAstro.configs.recommended,
   {
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+  {
     files: ["**/*.astro"],
     languageOptions: {
       parserOptions: {
