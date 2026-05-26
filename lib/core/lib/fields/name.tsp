@@ -2,6 +2,7 @@ namespace CommonBenefits.Fields;
 
 /** A person's name. */
 @example(Examples.Name.janeDoe)
+@Versioning.added(Versions.v0_1)
 model Name {
   /** Honorific prefix (e.g., Mr., Mrs., Dr., Prof.). */
   prefix?: string;

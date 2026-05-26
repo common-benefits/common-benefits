@@ -8,6 +8,7 @@ namespace CommonBenefits.Responses;
 // Default success response
 // ############################################################################
 
+@Versioning.added(Versions.v0_1)
 model Success {
   @example(200)
   status: int32;
@@ -35,6 +36,7 @@ model Success {
  * ```
  */
 @doc("A 200 response with data")
+@Versioning.added(Versions.v0_1)
 model Ok<T> extends Success {
   ...Http.OkResponse;
 
@@ -51,6 +53,7 @@ model Ok<T> extends Success {
  * @template T The schema for the value of the `"items"` property in this response.
  */
 @doc("A 200 response with a paginated list of items")
+@Versioning.added(Versions.v0_1)
 model Paginated<T> extends Success {
   ...Http.OkResponse;
 
@@ -71,6 +74,7 @@ model Paginated<T> extends Success {
  * @template T The schema for the value of the `"items"` property in this response.
  */
 @doc("A paginated list of items with a sort order")
+@Versioning.added(Versions.v0_1)
 model Sorted<T> {
   ...Paginated<T>;
 
@@ -88,6 +92,7 @@ model Sorted<T> {
  * @template FilterT The schema for the value of the `"filter"` property in this response.
  */
 @doc("A paginated list of items with a filter")
+@Versioning.added(Versions.v0_1)
 model Filtered<ItemsT, FilterT> extends Success {
   ...Sorted<ItemsT>;
 
@@ -108,6 +113,7 @@ model Filtered<ItemsT, FilterT> extends Success {
  *
  * @template T The schema for the value of the `"data"` property in this response.
  */
+@Versioning.added(Versions.v0_1)
 model Created<T> extends Success {
   ...Http.CreatedResponse;
 

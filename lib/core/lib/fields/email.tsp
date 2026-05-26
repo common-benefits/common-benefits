@@ -7,6 +7,7 @@ alias Email = Types.email;
 
 /** A collection of email addresses. */
 @example(Examples.Email.personalCollection)
+@Versioning.added(Versions.v0_1)
 model EmailCollection {
   /** The primary email address for a person or organization. */
   primary: Types.email;

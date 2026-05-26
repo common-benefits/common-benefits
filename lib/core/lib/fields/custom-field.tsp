@@ -9,6 +9,7 @@ namespace CommonBenefits.Fields;
  * - `object`: A nested object with its own properties.
  * - `array`: An ordered list of values.
  */
+@Versioning.added(Versions.v0_1)
 enum CustomFieldType {
   /** A sequence of characters. */
   string,
@@ -48,6 +49,7 @@ enum CustomFieldType {
 @example(Examples.CustomField.programArea, #{ title: "String field for program area" })
 @example(Examples.CustomField.eligibilityTypes, #{ title: "Array field for eligibility types" })
 @doc("A custom field on a model")
+@Versioning.added(Versions.v0_1)
 model CustomField {
   /** Name of the custom field. */
   name: string;

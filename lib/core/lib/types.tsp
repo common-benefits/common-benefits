@@ -11,11 +11,13 @@ namespace CommonBenefits.Types;
 /** A universally unique identifier. */
 @example("30a12e5e-5940-4c08-921c-17a8960fcf4b")
 @format("uuid")
+@Versioning.added(Versions.v0_1)
 scalar uuid extends string;
 
 /** An email address. */
 @example("test@example.com")
 @format("email")
+@Versioning.added(Versions.v0_1)
 scalar email extends string;
 
 // ########################################
@@ -27,6 +29,7 @@ scalar email extends string;
 @example("100")
 @example("100.5")
 @example("-100.5")
+@Versioning.added(Versions.v0_1)
 scalar decimalString extends string;
 
 // ########################################
@@ -35,13 +38,16 @@ scalar decimalString extends string;
 
 /** A time on a clock, without a timezone, in ISO 8601 format `HH:mm:ss`. */
 @example(isoTime.fromISO("17:00:00"))
+@Versioning.added(Versions.v0_1)
 scalar isoTime extends plainTime;
 
 /** A date on a calendar in ISO 8601 format `YYYY-MM-DD`. */
 @example(isoDate.fromISO("2025-01-01"))
+@Versioning.added(Versions.v0_1)
 scalar isoDate extends plainDate;
 
 /** A 4-digit calendar year. */
 @example("2025")
 @pattern("^[0-9]{4}$")
+@Versioning.added(Versions.v0_1)
 scalar calendarYear extends string;

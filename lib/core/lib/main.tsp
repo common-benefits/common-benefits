@@ -4,6 +4,7 @@ import "../dist/src/index.js";
 
 // Import TypeSpec libraries we depend on.
 import "@typespec/json-schema";
+import "@typespec/versioning";
 
 // Import core TypeSpec sources.
 import "./types.tsp";
@@ -13,4 +14,11 @@ import "./sorting.tsp";
 import "./filters/index.tsp";
 import "./responses/index.tsp";
 
+@Versioning.versioned(Versions)
 namespace CommonBenefits;
+
+/** Versions of the CommonBenefits protocol. */
+enum Versions {
+  /** The initial release of the CommonBenefits protocol. */
+  v0_1: "0.1.0",
+}

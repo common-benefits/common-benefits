@@ -2,6 +2,7 @@ namespace CommonBenefits.Fields;
 
 /** A mailing address. */
 @example(Examples.Address.apartment)
+@Versioning.added(Versions.v0_1)
 model Address {
   /** The primary street address line. */
   street1: string;
@@ -34,6 +35,7 @@ model Address {
 /** A collection of addresses. */
 @example(Examples.Address.personalCollection)
 @example(Examples.Address.orgCollection)
+@Versioning.added(Versions.v0_1)
 model AddressCollection {
   /** The primary address for a person or organization. */
   primary: Address;

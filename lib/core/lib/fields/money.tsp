@@ -8,6 +8,7 @@ using Types;
 @example(Examples.Money.usdWithCents, #{ title: "US dollars and cents" })
 @example(Examples.Money.euroWithoutCents, #{ title: "Euros displayed without cents" })
 @example(Examples.Money.usdNegative, #{ title: "A negative amount of US dollars and cents" })
+@Versioning.added(Versions.v0_1)
 model Money {
   /** The amount of money. */
   amount: decimalString;

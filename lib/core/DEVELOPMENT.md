@@ -30,19 +30,19 @@ lib/core/
 
 Run from `lib/core/` (or `pnpm --filter @common-benefits/core run <cmd>` from anywhere).
 
-| Command             | Description                                            |
-| ------------------- | ------------------------------------------------------ |
-| `pnpm build`        | Compile TypeScript to `dist/`                          |
-| `pnpm watch`        | Compile TypeScript in watch mode                       |
-| `pnpm typespec`     | Compile `lib/main.tsp` to verify the TypeSpec library  |
-| `pnpm clean`        | Remove `dist/` and `tsp-output/`                       |
-| `pnpm lint`         | Lint and auto-fix with ESLint                          |
-| `pnpm format`       | Format with Prettier and `tsp format`                  |
-| `pnpm check:lint`   | Lint without fixing (CI-safe)                          |
-| `pnpm check:format` | Check formatting without fixing (CI-safe)              |
-| `pnpm check:types`  | Type-check with `tsc --noEmit`                         |
-| `pnpm checks`       | Run all `check:*` scripts                              |
-| `pnpm ci`           | Run checks, build, and `tsp compile` (mirrors CI)      |
+| Command             | Description                                           |
+| ------------------- | ----------------------------------------------------- |
+| `pnpm build`        | Compile TypeScript to `dist/`                         |
+| `pnpm watch`        | Compile TypeScript in watch mode                      |
+| `pnpm typespec`     | Compile `lib/main.tsp` to verify the TypeSpec library |
+| `pnpm clean`        | Remove `dist/` and `tsp-output/`                      |
+| `pnpm lint`         | Lint and auto-fix with ESLint                         |
+| `pnpm format`       | Format with Prettier and `tsp format`                 |
+| `pnpm check:lint`   | Lint without fixing (CI-safe)                         |
+| `pnpm check:format` | Check formatting without fixing (CI-safe)             |
+| `pnpm check:types`  | Type-check with `tsc --noEmit`                        |
+| `pnpm checks`       | Run all `check:*` scripts                             |
+| `pnpm ci`           | Run checks, build, and `tsp compile` (mirrors CI)     |
 
 ## Releases
 

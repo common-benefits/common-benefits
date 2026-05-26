@@ -4,6 +4,7 @@ import "../types.tsp";
 namespace CommonBenefits.Filters;
 
 /** Filters by comparing a field to a date value. */
+@Versioning.added(Versions.v0_1)
 model DateComparisonFilter {
   /** The operator to apply to the filter value. */
   operator: ComparisonOperators;
@@ -14,6 +15,7 @@ model DateComparisonFilter {
 }
 
 /** Filters by comparing a field to a range of date values. */
+@Versioning.added(Versions.v0_1)
 model DateRangeFilter {
   /** The operator to apply to the filter value. */
   operator: RangeOperators;
