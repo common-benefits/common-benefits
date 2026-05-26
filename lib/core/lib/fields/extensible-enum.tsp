@@ -10,6 +10,9 @@ model ExtensibleEnum {
   /** The selected value. May be from a predefined set or a caller-defined value. */
   value: unknown;
 
+  /** Caller-defined value when `value` does not fit a predefined option. */
+  customValue?: string;
+
   /** Human-readable description or annotation for the value. */
   description?: string;
 }
@@ -36,6 +39,10 @@ model ExtensibleEnum {
 model ExtensibleEnumT<T> {
   /** The selected value, typed to `T`. */
   value: T;
+
+  /** Caller-defined value when `value` is the `custom` option (or otherwise
+   * does not fit a predefined option in `T`). */
+  customValue?: string;
 
   /** Human-readable description or annotation for the value. */
   description?: string;
