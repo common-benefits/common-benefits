@@ -56,6 +56,7 @@ export default defineConfig({
             { label: "API docs", link: "/protocol/api-docs" },
             categoryGroup("Types", "types"),
             categoryGroup("Fields", "fields"),
+            categoryGroup("Models", "models"),
             categoryGroup("Filters", "filters"),
             categoryGroup("Responses", "responses"),
             { label: "Pagination", link: "/protocol/pagination" },
