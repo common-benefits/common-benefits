@@ -12,6 +12,7 @@ import "./fields/index.tsp";
 import "./pagination.tsp";
 import "./sorting.tsp";
 import "./filters/index.tsp";
+import "./models/index.tsp";
 import "./responses/index.tsp";
 
 @Versioning.versioned(Versions)
