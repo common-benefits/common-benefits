@@ -7,10 +7,13 @@ import { pagesByCategory, type PageEntry, type ProtocolCategory } from "./src/li
 const categoryGroup = (label: string, category: ProtocolCategory) => ({
   label,
   collapsed: true,
-  items: pagesByCategory(category).map((p: PageEntry) => ({
-    label: p.title,
-    link: `/protocol/${category}/${p.page}`,
-  })),
+  items: [
+    { label: "Overview", link: `/protocol/${category}/` },
+    ...pagesByCategory(category).map((p: PageEntry) => ({
+      label: p.title,
+      link: `/protocol/${category}/${p.page}`,
+    })),
+  ],
 });
 
 // https://astro.build/config
@@ -44,16 +47,22 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/OWNER/common-benefits",
+          href: "https://github.com/common-benefits/common-benefits",
         },
       ],
       sidebar: [
-        { label: "Introduction", link: "/" },
+        {
+          label: "Welcome",
+          items: [
+            { label: "Getting started", link: "/getting-started" },
+            { label: "About CommonBenefits", link: "/about" },
+          ],
+        },
         {
           label: "Protocol",
           items: [
-            { label: "Overview", link: "/protocol/overview" },
             { label: "API docs", link: "/protocol/api-docs" },
+            { label: "Overview", link: "/protocol/overview" },
             categoryGroup("Types", "types"),
             categoryGroup("Fields", "fields"),
             categoryGroup("Models", "models"),

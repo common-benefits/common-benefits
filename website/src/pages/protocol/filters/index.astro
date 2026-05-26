@@ -1,0 +1,17 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import ProtocolCategoryCards from "@/components/ProtocolCategoryCards.astro";
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "Filters",
+    description: "Operator enums and typed filter models for querying collections.",
+  }}
+>
+  <p>
+    Filters define the operators and typed filter models used to query collections of records.
+    Browse each filter group below.
+  </p>
+  <ProtocolCategoryCards category="filters" />
+</StarlightPage>
