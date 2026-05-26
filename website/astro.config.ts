@@ -36,6 +36,7 @@ export default defineConfig({
             "/protocol/responses/**",
             "/protocol/types/**",
             "/protocol/models/**",
+            "/protocol/api-docs",
           ],
         }),
       ],
@@ -52,6 +53,7 @@ export default defineConfig({
           label: "Protocol",
           items: [
             { label: "Overview", link: "/protocol/overview" },
+            { label: "API docs", link: "/protocol/api-docs" },
             categoryGroup("Types", "types"),
             categoryGroup("Fields", "fields"),
             categoryGroup("Filters", "filters"),
