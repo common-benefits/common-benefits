@@ -27,7 +27,7 @@ enum DeterminationOutcomeOptions {
 
 /** The outcome of an eligibility determination. */
 @Versioning.added(Versions.v0_1)
-model DeterminationOutcome extends Fields.ExtensibleEnumT<DeterminationOutcomeOptions> {}
+model DeterminationOutcome is Fields.ExtensibleEnumT<DeterminationOutcomeOptions>;
 
 // #########################################################
 // DeterminationEstimatedBenefit
@@ -63,7 +63,7 @@ enum DeterminationBasisTypeOptions {
 
 /** The type of basis on which a determination was made. */
 @Versioning.added(Versions.v0_1)
-model DeterminationBasisType extends Fields.ExtensibleEnumT<DeterminationBasisTypeOptions> {}
+model DeterminationBasisType is Fields.ExtensibleEnumT<DeterminationBasisTypeOptions>;
 
 // #########################################################
 // DeterminationBasis

@@ -28,7 +28,7 @@ enum FrequencyOptions {
  */
 @example(Examples.Frequency.monthly)
 @Versioning.added(Versions.v0_1)
-model Frequency extends ExtensibleEnumT<FrequencyOptions> {}
+model Frequency is ExtensibleEnumT<FrequencyOptions>;
 
 namespace Examples.Frequency {
   const monthly = #{ value: FrequencyOptions.monthly, description: "" };

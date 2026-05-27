@@ -30,7 +30,7 @@ enum JurisdictionLevelOptions {
  * implementations can supply custom levels via the `description` field.
  */
 @Versioning.added(Versions.v0_1)
-model JurisdictionLevel extends Fields.ExtensibleEnumT<JurisdictionLevelOptions> {}
+model JurisdictionLevel is Fields.ExtensibleEnumT<JurisdictionLevelOptions>;
 
 // #########################################################
 // JurisdictionRef

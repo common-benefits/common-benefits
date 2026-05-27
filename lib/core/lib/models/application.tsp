@@ -26,7 +26,7 @@ enum AppStatusOptions {
 
 /** The status of an application. */
 @Versioning.added(Versions.v0_1)
-model AppStatus extends Fields.ExtensibleEnumT<AppStatusOptions> {}
+model AppStatus is Fields.ExtensibleEnumT<AppStatusOptions>;
 
 // #########################################################
 // AppFormResponse

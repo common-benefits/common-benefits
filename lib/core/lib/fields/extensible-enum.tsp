@@ -32,7 +32,7 @@ model ExtensibleEnum {
  *   custom,
  * }
  *
- * model CitizenshipStatus extends ExtensibleEnumT<CitizenshipStatusOptions> {}
+ * model CitizenshipStatus is ExtensibleEnumT<CitizenshipStatusOptions>;
  * ```
  */
 @Versioning.added(Versions.v0_1)
