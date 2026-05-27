@@ -1,8 +1,49 @@
 ---
-title: CommonBenefits
-description: A protocol for describing benefits programs.
+title: A common language for benefits data
+description: Documentation for the CommonBenefits protocol.
+template: splash
+hero:
+  tagline: CommonBenefits is an open protocol for describing benefits programs, the households they serve, and the data exchanged between the systems that administer them.
+  actions:
+    - text: Read the docs
+      link: /getting-started/
+      icon: open-book
+    - text: View the API docs
+      link: /protocol/api-docs
+      icon: right-arrow
+      variant: minimal
+editUrl: false
 ---
 
-CommonBenefits is a protocol for describing benefits programs, defined in TypeSpec.
+import { Card, CardGrid, LinkCard } from "@astrojs/starlight/components";
 
-This site is a documentation placeholder. Real content lands as the protocol takes shape.
+## Why CommonBenefits?
+
+Benefits programs are administered across a patchwork of agencies, systems, and data formats. The same household answers the same questions over and over, and every integration between systems is built from scratch.
+
+CommonBenefits defines a shared data model and API, written in TypeSpec, for the people, households, programs, and applications at the center of the benefits ecosystem, so that systems can exchange this data without bespoke integrations.
+
+## Explore the protocol
+
+<CardGrid>
+  <LinkCard
+    title="Getting started"
+    href="/getting-started/"
+    description="Find your way around the documentation."
+  />
+  <LinkCard
+    title="Protocol overview"
+    href="/protocol/overview"
+    description="How the protocol is organized and how each schema page is built."
+  />
+  <LinkCard
+    title="Models"
+    href="/protocol/models/"
+    description="The core domain resources: people, households, programs, and applications."
+  />
+  <LinkCard
+    title="API docs"
+    href="/protocol/api-docs"
+    description="Browse the API endpoints defined by the protocol."
+  />
+</CardGrid>

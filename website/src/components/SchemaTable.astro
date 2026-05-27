@@ -16,7 +16,7 @@ if (!findSchema(schema)) {
   );
 }
 
-const parsed = SchemaLoader.loadSchemaByName(schema);
+const parsed = SchemaLoader.loadResolvedSchemaByName(schema);
 const isEnum = SchemaLoader.isEnumSchema(parsed);
 const isObject = SchemaLoader.isObjectSchema(parsed);
 const propertyRows = isObject ? TableGenerator.generatePropertyRows(parsed, getDocPath) : [];

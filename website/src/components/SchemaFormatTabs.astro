@@ -6,6 +6,7 @@ import { Paths } from "@/lib/paths";
 import { findSchema } from "@/lib/protocol-catalog";
 import { generateSchemaExample } from "@/lib/schema/example-generator";
 import { SchemaLoader } from "@/lib/schema/schema-loader";
+import { extractTypeSpecDeclaration } from "@/lib/typespec-extractor";
 
 export interface Props {
   schema: string;
@@ -22,18 +23,27 @@ if (!found) {
 }
 
 const source = found.entry.source;
-const schemaYaml = SchemaLoader.loadRawYamlByName(schema);
+const schemaYaml = SchemaLoader.loadResolvedYamlByName(schema);
 const typeSpecSource =
   source.kind === "typespec"
-    ? readFileSync(join(Paths.REPO_ROOT, source.sourcePath), "utf-8")
+    ? (extractTypeSpecDeclaration(
+        readFileSync(join(Paths.REPO_ROOT, source.sourcePath), "utf-8"),
+        schema
+      ) ?? `// ${schema} not found in ${source.sourcePath}`)
     : null;
 
-// openapi-sampler can choke on certain edge cases; surface a placeholder
-// rather than failing the whole page build.
-const example = await generateSchemaExample(schema).catch(
-  (error) =>
-    `// Failed to generate example: ${error instanceof Error ? error.message : String(error)}`
-);
+// Fail the build loudly on example-generation errors: log the full error to
+// the console and rethrow with the schema name, rather than rendering a broken
+// placeholder into the page.
+const example = await generateSchemaExample(schema).catch((error: unknown) => {
+  console.error(`Failed to generate example for schema "${schema}":`, error);
+  throw new Error(
+    `Failed to generate example for schema "${schema}": ${
+      error instanceof Error ? error.message : String(error)
+    }`,
+    { cause: error instanceof Error ? error : undefined }
+  );
+});
 ---
 
 <Tabs>

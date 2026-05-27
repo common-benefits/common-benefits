@@ -1,0 +1,129 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+const versions = [
+  {
+    value: "0.1.0",
+    label: "v0.1.0 (Latest)",
+    url: "/openapi/openapi.0.1.0.yaml",
+  },
+] as const;
+const defaultVersion = versions[0].value;
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "API docs",
+    description: "Browse the CommonBenefits OpenAPI specification.",
+    tableOfContents: false,
+  }}
+>
+  <label class="api-version-select">
+    <span>API version</span>
+    <select id="api-version">
+      {
+        versions.map(({ value, label, url }) => (
+          <option value={value} data-url={url} selected={value === defaultVersion}>
+            {label}
+          </option>
+        ))
+      }
+    </select>
+  </label>
+
+  <div id="swagger-ui"></div>
+</StarlightPage>
+
+<style>
+  /* Let the Swagger UI panel fill the page. */
+  :global(.sl-container) {
+    max-width: 100% !important;
+    padding: 0 1.5rem !important;
+  }
+
+  .api-version-select {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    color: var(--sl-color-text);
+  }
+
+  .api-version-select select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 6px;
+    background: var(--sl-color-bg);
+    color: var(--sl-color-text);
+    font-size: 1rem;
+    font-family: inherit;
+  }
+
+  /* Swagger UI draws outlined "boxes" around the API version and OAS
+     spec-version pills; the colored backgrounds already read as badges. */
+  :global(.swagger-ui .version),
+  :global(.swagger-ui .info .version-stamp) {
+    border: none !important;
+  }
+
+  /* Neutralize the bare html background swagger-ui's dark-mode CSS sets
+     so Starlight's own background still shows through. */
+  :global(html.dark-mode) {
+    background: var(--sl-color-bg) !important;
+  }
+</style>
+
+<script>
+  import { SwaggerUIBundle } from "swagger-ui-dist";
+  import "swagger-ui-dist/swagger-ui.css";
+
+  const select = document.getElementById("api-version") as HTMLSelectElement | null;
+  const container = document.getElementById("swagger-ui");
+  if (!select || !container) {
+    throw new Error("API docs page is missing required elements");
+  }
+
+  // Swagger UI ships a built-in dark mode (172 rules) keyed off
+  // `html.dark-mode`. Sync that class with Starlight's `data-theme` so
+  // the panel adopts swagger-ui's native dark styling instead of a
+  // filter hack.
+  function syncDarkMode() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    document.documentElement.classList.toggle("dark-mode", isDark);
+  }
+  syncDarkMode();
+  new MutationObserver(syncDarkMode).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+
+  const versionUrls = new Map(
+    Array.from(select.options).map((o) => [o.value, o.dataset.url ?? ""])
+  );
+
+  function render(version: string) {
+    const specUrl = versionUrls.get(version);
+    if (!specUrl) return;
+    container!.innerHTML = "";
+    SwaggerUIBundle({
+      url: specUrl,
+      dom_id: "#swagger-ui",
+      supportedSubmitMethods: [],
+      deepLinking: true,
+    });
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("version", version);
+    window.history.replaceState({}, "", url.toString());
+  }
+
+  const requested = new URLSearchParams(window.location.search).get("version");
+  const initial = requested && versionUrls.has(requested) ? requested : select.value;
+  if (initial !== select.value) select.value = initial;
+  render(initial);
+
+  select.addEventListener("change", (event) => {
+    render((event.target as HTMLSelectElement).value);
+  });
+</script>

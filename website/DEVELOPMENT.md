@@ -53,25 +53,25 @@ Steps 1 and 2 are wired into `pnpm dev` and `pnpm build`, so `pnpm dev` is the r
 
 Run from `website/` (or `pnpm --filter @common-benefits/website run <cmd>` from anywhere).
 
-| Command                 | Action                                                                  |
-| :---------------------- | :---------------------------------------------------------------------- |
-| `pnpm dev`              | TypeSpec compile + Astro dev server at `localhost:4321`                 |
-| `pnpm build`            | TypeSpec compile + production build to `dist/`                          |
-| `pnpm preview`          | Preview the built site locally with Astro                               |
-| `pnpm preview:wrangler` | Build and preview under Wrangler (closer to production)                 |
-| `pnpm deploy`           | Build and deploy the Worker to Cloudflare (CI-managed; see below)       |
-| `pnpm typespec`         | Compile `src/specs/main.tsp` to JSON Schema + OpenAPI under `public/`   |
-| `pnpm typespec:clear`   | Remove generated TypeSpec output from `public/`                         |
-| `pnpm format`           | Format with Prettier and auto-fix                                       |
-| `pnpm lint`             | Lint and auto-fix with ESLint                                           |
-| `pnpm check:format`     | Check formatting without fixing (CI-safe)                               |
-| `pnpm check:lint`       | Lint without fixing (CI-safe)                                           |
-| `pnpm check:types`      | Type-check with `astro sync && tsc --noEmit`                            |
-| `pnpm check:astro`      | Validate Astro components and content                                   |
-| `pnpm checks`           | Run all `check:*` scripts                                               |
-| `pnpm test`             | Run tests with Vitest (`--passWithNoTests`)                             |
-| `pnpm ci`               | Run checks, build, and tests (mirrors CI)                               |
-| `pnpm astro -- --help`  | Get help using the Astro CLI                                            |
+| Command                 | Action                                                                |
+| :---------------------- | :-------------------------------------------------------------------- |
+| `pnpm dev`              | TypeSpec compile + Astro dev server at `localhost:4321`               |
+| `pnpm build`            | TypeSpec compile + production build to `dist/`                        |
+| `pnpm preview`          | Preview the built site locally with Astro                             |
+| `pnpm preview:wrangler` | Build and preview under Wrangler (closer to production)               |
+| `pnpm deploy`           | Build and deploy the Worker to Cloudflare (CI-managed; see below)     |
+| `pnpm typespec`         | Compile `src/specs/main.tsp` to JSON Schema + OpenAPI under `public/` |
+| `pnpm typespec:clear`   | Remove generated TypeSpec output from `public/`                       |
+| `pnpm format`           | Format with Prettier and auto-fix                                     |
+| `pnpm lint`             | Lint and auto-fix with ESLint                                         |
+| `pnpm check:format`     | Check formatting without fixing (CI-safe)                             |
+| `pnpm check:lint`       | Lint without fixing (CI-safe)                                         |
+| `pnpm check:types`      | Type-check with `astro sync && tsc --noEmit`                          |
+| `pnpm check:astro`      | Validate Astro components and content                                 |
+| `pnpm checks`           | Run all `check:*` scripts                                             |
+| `pnpm test`             | Run tests with Vitest (`--passWithNoTests`)                           |
+| `pnpm ci`               | Run checks, build, and tests (mirrors CI)                             |
+| `pnpm astro -- --help`  | Get help using the Astro CLI                                          |
 
 ## Adding a new page
 

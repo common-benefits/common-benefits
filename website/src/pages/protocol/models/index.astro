@@ -1,0 +1,17 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import ProtocolCategoryCards from "@/components/ProtocolCategoryCards.astro";
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "Models",
+    description: "The core domain resources defined by the protocol.",
+  }}
+>
+  <p>
+    Models are the top-level domain resources, like people, households, programs, and applications,
+    that benefits systems exchange. Browse each model below.
+  </p>
+  <ProtocolCategoryCards category="models" />
+</StarlightPage>

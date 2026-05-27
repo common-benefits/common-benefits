@@ -1,0 +1,17 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import ProtocolCategoryCards from "@/components/ProtocolCategoryCards.astro";
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "Fields",
+    description: "Reusable building blocks shared across the protocol's models.",
+  }}
+>
+  <p>
+    Fields are the reusable building blocks, like addresses, names, and money, that models compose
+    together. Browse each field below.
+  </p>
+  <ProtocolCategoryCards category="fields" />
+</StarlightPage>

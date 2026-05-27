@@ -1,0 +1,23 @@
+---
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+import { pagesByCategory, type ProtocolCategory } from "@/lib/protocol-catalog";
+
+export interface Props {
+  category: ProtocolCategory;
+}
+
+const { category } = Astro.props;
+const items = pagesByCategory(category);
+---
+
+<CardGrid>
+  {
+    items.map((page) => (
+      <LinkCard
+        title={page.title}
+        href={`/protocol/${category}/${page.page}`}
+        description={page.description}
+      />
+    ))
+  }
+</CardGrid>

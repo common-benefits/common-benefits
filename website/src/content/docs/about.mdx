@@ -1,0 +1,60 @@
+---
+title: About CommonBenefits
+description: Learn about the CommonBenefits protocol and its goals.
+---
+
+import { CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+**CommonBenefits** is an open protocol for describing benefits programs, the households they serve, and the data exchanged between the systems that administer them.
+
+## What is CommonBenefits?
+
+CommonBenefits defines a shared set of data models, like people, households, programs, applications, and eligibility determinations, that benefits systems can use to exchange information without building a custom integration for every pair of systems.
+
+The protocol is implemented in [TypeSpec](https://typespec.io/), a language for defining APIs that compiles to OpenAPI, JSON Schema, and other common formats. This makes it easy to:
+
+- Validate compliance across implementations
+- Generate libraries and tools in different languages
+- Extend the protocol without breaking existing tools
+
+## Design principles
+
+CommonBenefits is guided by a few key principles:
+
+- **Standardization**: A shared language for describing benefits programs and the people they serve
+- **Extensibility**: A core schema with support for program-specific and jurisdiction-specific extensions
+- **Interoperability**: Models and APIs that work across systems, not just within them
+- **Portability**: Benefits data that households and agencies can carry with them
+
+## Background and inspiration
+
+CommonBenefits builds on the design patterns and community principles behind:
+
+- [JSON Schema](https://json-schema.org/): For structured, self-validating data
+- [OpenAPI](https://swagger.io/specification/): For generating consistent APIs
+- [FHIR](https://www.hl7.org/fhir/): For standardizing complex data across a fragmented ecosystem
+
+## Learn more
+
+<CardGrid>
+  <LinkCard
+    title="Getting started"
+    href="/getting-started/"
+    description="Find your way around the documentation."
+  />
+  <LinkCard
+    title="Protocol overview"
+    href="/protocol/overview"
+    description="How the protocol is organized and how each schema page is built."
+  />
+  <LinkCard
+    title="Models"
+    href="/protocol/models/"
+    description="Explore the core domain resources defined by the protocol."
+  />
+  <LinkCard
+    title="API docs"
+    href="/protocol/api-docs"
+    description="Browse the API endpoints defined by the protocol."
+  />
+</CardGrid>

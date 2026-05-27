@@ -1,0 +1,17 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import ProtocolCategoryCards from "@/components/ProtocolCategoryCards.astro";
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "Types",
+    description: "Primitive and branded scalar types used throughout the protocol.",
+  }}
+>
+  <p>
+    The protocol's types are the primitive and branded scalars that more complex fields and models
+    are built from. Browse each group below.
+  </p>
+  <ProtocolCategoryCards category="types" />
+</StarlightPage>

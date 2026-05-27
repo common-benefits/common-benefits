@@ -1,0 +1,17 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+import ProtocolCategoryCards from "@/components/ProtocolCategoryCards.astro";
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "Responses",
+    description: "Standard success and error response envelopes.",
+  }}
+>
+  <p>
+    Responses are the standard envelopes that wrap the data returned by protocol routes. Browse the
+    success and error shapes below.
+  </p>
+  <ProtocolCategoryCards category="responses" />
+</StarlightPage>
