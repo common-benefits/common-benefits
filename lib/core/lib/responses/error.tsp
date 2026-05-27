@@ -14,6 +14,7 @@ namespace CommonBenefits.Responses;
  */
 @error
 @doc("A non-2xx response schema")
+@Versioning.added(Versions.v0_1)
 model Error {
   @example(400)
   status: int32;

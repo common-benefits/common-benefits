@@ -15,6 +15,7 @@ namespace CommonBenefits.Fields;
  * ```
  */
 @example(Examples.Metadata.system)
+@Versioning.added(Versions.v0_1)
 model SystemMetadata {
   /** The timestamp (in UTC) at which the record was created. */
   @visibility(Lifecycle.Read)

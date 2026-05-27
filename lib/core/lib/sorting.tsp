@@ -24,6 +24,7 @@ namespace CommonBenefits.Sorting;
  * - `asc`: Ascending order (A→Z, 0→9, oldest→newest).
  * - `desc`: Descending order (Z→A, 9→0, newest→oldest).
  */
+@Versioning.added(Versions.v0_1)
 enum SortOrder {
   /** Ascending order (A→Z, 0→9, oldest→newest). */
   asc,
@@ -33,6 +34,7 @@ enum SortOrder {
 }
 
 /** Query parameters for sorting. */
+@Versioning.added(Versions.v0_1)
 model SortQueryParams {
   /** The field to sort by. */
   @query
@@ -51,6 +53,7 @@ model SortQueryParams {
 }
 
 /** Sorting parameters included in the request body. */
+@Versioning.added(Versions.v0_1)
 model SortBodyParams {
   /** The field to sort by. */
   @example("lastModifiedAt")
@@ -66,6 +69,7 @@ model SortBodyParams {
 }
 
 /** Information about the sort order of the items returned. */
+@Versioning.added(Versions.v0_1)
 model SortedResultsInfo {
   /** The field results are sorted by, or "custom" if an implementation-defined sort key is used. */
   @example("lastModifiedAt")

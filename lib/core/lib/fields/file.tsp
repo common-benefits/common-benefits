@@ -3,6 +3,7 @@ namespace CommonBenefits.Fields;
 /** A field representing a downloadable file. */
 @example(Examples.File.imageFile, #{ title: "An image file" })
 @example(Examples.File.pdfFile, #{ title: "A PDF file" })
+@Versioning.added(Versions.v0_1)
 model File {
   /** The file's download URL. */
   downloadUrl: url;

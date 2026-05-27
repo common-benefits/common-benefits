@@ -9,6 +9,7 @@ namespace CommonBenefits.Filters;
  * - `eq`: Equal to a value.
  * - `neq`: Not equal to a value.
  */
+@Versioning.added(Versions.v0_1)
 enum EquivalenceOperators {
   /** Equal to a value. */
   eq,
@@ -24,6 +25,7 @@ enum EquivalenceOperators {
  * - `lt`: Less than a value.
  * - `lte`: Less than or equal to a value.
  */
+@Versioning.added(Versions.v0_1)
 enum ComparisonOperators {
   /** Greater than a value. */
   gt,
@@ -43,6 +45,7 @@ enum ComparisonOperators {
  * - `in`: Field's value is one of the supplied values.
  * - `notIn`: Field's value is not in the supplied values.
  */
+@Versioning.added(Versions.v0_1)
 enum ArrayOperators {
   /** Field's value is one of the supplied values. */
   in,
@@ -56,6 +59,7 @@ enum ArrayOperators {
  * - `like`: Field matches the supplied pattern (case-insensitive substring or wildcard).
  * - `notLike`: Field does not match the supplied pattern.
  */
+@Versioning.added(Versions.v0_1)
 enum StringOperators {
   /** Field matches the supplied pattern (case-insensitive substring or wildcard). */
   like,
@@ -69,6 +73,7 @@ enum StringOperators {
  * - `between`: Field's value falls within the supplied inclusive range.
  * - `outside`: Field's value falls outside the supplied range.
  */
+@Versioning.added(Versions.v0_1)
 enum RangeOperators {
   /** Field's value falls within the supplied inclusive range. */
   between,
@@ -92,6 +97,7 @@ enum RangeOperators {
  * - `like`: Field matches the supplied pattern.
  * - `notLike`: Field does not match the supplied pattern.
  */
+@Versioning.added(Versions.v0_1)
 enum AllOperators {
   ...EquivalenceOperators,
   ...ComparisonOperators,
@@ -105,6 +111,7 @@ enum AllOperators {
 // ############################################################################
 
 /** A base filter model that can be used to create more specific filter models. */
+@Versioning.added(Versions.v0_1)
 model DefaultFilter {
   /** The operator to apply to the filter value. */
   operator:
