@@ -11,7 +11,7 @@ namespace CommonBenefits.Responses;
 @Versioning.added(Versions.v0_1)
 model Success {
   @example(200)
-  status: int32;
+  status: numeric;
 
   @example("Success")
   message: string;
@@ -29,7 +29,10 @@ model Success {
 @doc("A 200 response with data")
 @Versioning.added(Versions.v0_1)
 model Ok extends Success {
-  ...Http.OkResponse;
+  // Concrete (documentation) responses pin the body `status` as a literal. The
+  // HTTP status code is carried by the templated `*T` variants via
+  // `...Http.*Response`, which are the models actually used by routes.
+  status: 200;
 
   /** Response data. */
   data: unknown;
@@ -51,7 +54,7 @@ model Ok extends Success {
  */
 @doc("A 200 response with typed data")
 @Versioning.added(Versions.v0_1)
-model OkT<T> extends Success {
+model OkT<T> extends Ok {
   ...Http.OkResponse;
 
   /** Response data. */
@@ -62,31 +65,15 @@ model OkT<T> extends Success {
 // 200 paginated response
 // ############################################################################
 
-/** A 200 response with a paginated list of items of an unspecified shape.
+/** Body shape shared by `Paginated` and `PaginatedT<T>`. Templates do not emit
+ * a standalone schema, so the concrete `Paginated` is `is PaginatedBase<unknown>`
+ * and the route response is `extends PaginatedBase<T>`. Both stay in sync.
  *
- * For a typed variant, see `PaginatedT<T>`.
+ * @template T The schema for the value of the `"items"` property.
  */
-@doc("A 200 response with a paginated list of items")
 @Versioning.added(Versions.v0_1)
-model Paginated extends Success {
-  ...Http.OkResponse;
-
-  /** Items from the current page. */
-  @pageItems
-  items: unknown[];
-
-  /** Details about the paginated results. */
-  paginationInfo: Pagination.PaginatedResultsInfo;
-}
-
-/** Template for a 200 response with a paginated list of typed items.
- *
- * @template T The schema for the value of the `"items"` property in this response.
- */
-@doc("A 200 response with a paginated list of typed items")
-@Versioning.added(Versions.v0_1)
-model PaginatedT<T> extends Success {
-  ...Http.OkResponse;
+model PaginatedBase<T> extends Success {
+  status: 200;
 
   /** Items from the current page. */
   @pageItems
@@ -96,19 +83,44 @@ model PaginatedT<T> extends Success {
   paginationInfo: Pagination.PaginatedResultsInfo;
 }
 
+/** A 200 response with a paginated list of items of an unspecified shape.
+ *
+ * For a typed variant, see `PaginatedT<T>`.
+ */
+@doc("A 200 response with a paginated list of items")
+@Versioning.added(Versions.v0_1)
+model Paginated is PaginatedBase<unknown>;
+
+/** Template for a 200 response with a paginated list of typed items.
+ *
+ * @template T The schema for the value of the `"items"` property in this response.
+ */
+@doc("A 200 response with a paginated list of typed items")
+@Versioning.added(Versions.v0_1)
+model PaginatedT<T> extends PaginatedBase<T> {
+  ...Http.OkResponse;
+}
+
 // ############################################################################
 // 200 sorted response
 // ############################################################################
 
-/** A paginated list of items with a sort order. */
-@doc("A paginated list of items with a sort order")
+/** Body shape shared by `Sorted` and `SortedT<T>`.
+ *
+ * @template T The schema for the value of the `"items"` property.
+ */
 @Versioning.added(Versions.v0_1)
-model Sorted {
-  ...Paginated;
+model SortedBase<T> {
+  ...PaginatedBase<T>;
 
   /** The sort order of the items. */
   sortInfo: Sorting.SortedResultsInfo;
 }
+
+/** A paginated list of items with a sort order. */
+@doc("A paginated list of items with a sort order")
+@Versioning.added(Versions.v0_1)
+model Sorted is SortedBase<unknown>;
 
 /** A paginated list of typed items with a sort order.
  *
@@ -116,41 +128,22 @@ model Sorted {
  */
 @doc("A paginated list of typed items with a sort order")
 @Versioning.added(Versions.v0_1)
-model SortedT<T> {
-  ...PaginatedT<T>;
-
-  /** The sort order of the items. */
-  sortInfo: Sorting.SortedResultsInfo;
+model SortedT<T> extends SortedBase<T> {
+  ...Http.OkResponse;
 }
 
 // ############################################################################
 // 200 filtered response
 // ############################################################################
 
-/** A paginated list of items with a filter applied. */
-@doc("A paginated list of items with a filter")
-@Versioning.added(Versions.v0_1)
-model Filtered extends Success {
-  ...Sorted;
-
-  /** The filters applied to the response items. */
-  filterInfo: {
-    filters: unknown;
-
-    /** Non-fatal errors that occurred during filtering. */
-    errors?: string[];
-  };
-}
-
-/** A paginated list of typed items with a typed filter applied.
+/** Body shape shared by `Filtered` and `FilteredT<ItemsT, FilterT>`.
  *
- * @template ItemsT The schema for the value of the `"items"` property in this response.
- * @template FilterT The schema for the value of the `"filter"` property in this response.
+ * @template ItemsT The schema for the value of the `"items"` property.
+ * @template FilterT The schema for the value of the `"filters"` property.
  */
-@doc("A paginated list of typed items with a typed filter")
 @Versioning.added(Versions.v0_1)
-model FilteredT<ItemsT, FilterT> extends Success {
-  ...SortedT<ItemsT>;
+model FilteredBase<ItemsT, FilterT> {
+  ...SortedBase<ItemsT>;
 
   /** The filters applied to the response items. */
   filterInfo: {
@@ -159,6 +152,22 @@ model FilteredT<ItemsT, FilterT> extends Success {
     /** Non-fatal errors that occurred during filtering. */
     errors?: string[];
   };
+}
+
+/** A paginated list of items with a filter applied. */
+@doc("A paginated list of items with a filter")
+@Versioning.added(Versions.v0_1)
+model Filtered is FilteredBase<unknown, unknown>;
+
+/** A paginated list of typed items with a typed filter applied.
+ *
+ * @template ItemsT The schema for the value of the `"items"` property in this response.
+ * @template FilterT The schema for the value of the `"filter"` property in this response.
+ */
+@doc("A paginated list of typed items with a typed filter")
+@Versioning.added(Versions.v0_1)
+model FilteredT<ItemsT, FilterT> extends FilteredBase<ItemsT, FilterT> {
+  ...Http.OkResponse;
 }
 
 // ############################################################################
@@ -171,7 +180,7 @@ model FilteredT<ItemsT, FilterT> extends Success {
  */
 @Versioning.added(Versions.v0_1)
 model Created extends Success {
-  ...Http.CreatedResponse;
+  status: 201;
 
   /** Response data. */
   data: unknown;
@@ -182,7 +191,7 @@ model Created extends Success {
  * @template T The schema for the value of the `"data"` property in this response.
  */
 @Versioning.added(Versions.v0_1)
-model CreatedT<T> extends Success {
+model CreatedT<T> extends Created {
   ...Http.CreatedResponse;
 
   /** Response data. */
