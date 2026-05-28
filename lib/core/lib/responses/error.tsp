@@ -17,7 +17,7 @@ namespace CommonBenefits.Responses;
 @Versioning.added(Versions.v0_1)
 model Error {
   @example(400)
-  status: int32;
+  status: numeric;
 
   /** Human-readable error message. */
   @example("Error")

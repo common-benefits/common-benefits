@@ -180,6 +180,7 @@ model FilteredT<ItemsT, FilterT> extends FilteredBase<ItemsT, FilterT> {
  */
 @Versioning.added(Versions.v0_1)
 model Created extends Success {
+  @example(201)
   status: 201;
 
   /** Response data. */
