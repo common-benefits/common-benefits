@@ -48,13 +48,13 @@ model PaginatedResultsInfo {
   /** Number of items per page. */
   @example(20)
   @minValue(1)
-  pageSize: integer;
+  pageSize: int32;
 
   /** Total number of items across all pages. */
   @example(100)
-  totalItems?: integer;
+  totalItems?: int32;
 
   /** Total number of pages. */
   @example(5)
-  totalPages?: integer;
+  totalPages?: int32;
 }
