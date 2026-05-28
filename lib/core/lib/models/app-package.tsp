@@ -57,7 +57,7 @@ enum AppPackageStatusOptions {
 
 /** The status of an application package. */
 @Versioning.added(Versions.v0_1)
-model AppPackageStatus extends Fields.ExtensibleEnumT<AppPackageStatusOptions> {}
+model AppPackageStatus is Fields.ExtensibleEnumT<AppPackageStatusOptions>;
 
 // #########################################################
 // AppPackageBase

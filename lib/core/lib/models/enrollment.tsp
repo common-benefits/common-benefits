@@ -27,7 +27,7 @@ enum EnrollmentStatusOptions {
 
 /** The status of an enrollment. */
 @Versioning.added(Versions.v0_1)
-model EnrollmentStatus extends Fields.ExtensibleEnumT<EnrollmentStatusOptions> {}
+model EnrollmentStatus is Fields.ExtensibleEnumT<EnrollmentStatusOptions>;
 
 // #########################################################
 // EnrollmentRef

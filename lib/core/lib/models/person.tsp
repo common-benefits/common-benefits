@@ -51,7 +51,7 @@ enum PersonCitizenshipStatusOptions {
 
 /** A person's citizenship status. */
 @Versioning.added(Versions.v0_1)
-model PersonCitizenshipStatus extends Fields.ExtensibleEnumT<PersonCitizenshipStatusOptions> {}
+model PersonCitizenshipStatus is Fields.ExtensibleEnumT<PersonCitizenshipStatusOptions>;
 
 // #########################################################
 // PersonImmigrationStatus
@@ -80,7 +80,7 @@ enum PersonImmigrationStatusOptions {
 
 /** A person's immigration status. */
 @Versioning.added(Versions.v0_1)
-model PersonImmigrationStatus extends Fields.ExtensibleEnumT<PersonImmigrationStatusOptions> {}
+model PersonImmigrationStatus is Fields.ExtensibleEnumT<PersonImmigrationStatusOptions>;
 
 // #########################################################
 // PersonLegalProfile
@@ -122,7 +122,7 @@ enum PersonDisabilityStatusOptions {
 
 /** A person's disability status. */
 @Versioning.added(Versions.v0_1)
-model PersonDisabilityStatus extends Fields.ExtensibleEnumT<PersonDisabilityStatusOptions> {}
+model PersonDisabilityStatus is Fields.ExtensibleEnumT<PersonDisabilityStatusOptions>;
 
 /** A person's disability information. */
 @Versioning.added(Versions.v0_1)
@@ -156,7 +156,7 @@ enum PersonPregnancyStatusOptions {
 
 /** A person's pregnancy status. */
 @Versioning.added(Versions.v0_1)
-model PersonPregnancyStatus extends Fields.ExtensibleEnumT<PersonPregnancyStatusOptions> {}
+model PersonPregnancyStatus is Fields.ExtensibleEnumT<PersonPregnancyStatusOptions>;
 
 /** A person's pregnancy information. */
 @Versioning.added(Versions.v0_1)
@@ -207,7 +207,7 @@ enum PersonEmploymentStatusOptions {
 
 /** A person's employment status. */
 @Versioning.added(Versions.v0_1)
-model PersonEmploymentStatus extends Fields.ExtensibleEnumT<PersonEmploymentStatusOptions> {}
+model PersonEmploymentStatus is Fields.ExtensibleEnumT<PersonEmploymentStatusOptions>;
 
 // #########################################################
 // PersonStudentStatus
@@ -230,7 +230,7 @@ enum PersonStudentStatusOptions {
 
 /** A person's student enrollment status. */
 @Versioning.added(Versions.v0_1)
-model PersonStudentStatus extends Fields.ExtensibleEnumT<PersonStudentStatusOptions> {}
+model PersonStudentStatus is Fields.ExtensibleEnumT<PersonStudentStatusOptions>;
 
 // #########################################################
 // PersonCaregiverStatus
@@ -253,7 +253,7 @@ enum PersonCaregiverStatusOptions {
 
 /** A person's caregiver status. */
 @Versioning.added(Versions.v0_1)
-model PersonCaregiverStatus extends Fields.ExtensibleEnumT<PersonCaregiverStatusOptions> {}
+model PersonCaregiverStatus is Fields.ExtensibleEnumT<PersonCaregiverStatusOptions>;
 
 // #########################################################
 // PersonWorkProfile
@@ -322,7 +322,7 @@ enum PersonIncomeSourceTypeOptions {
 
 /** The type of an income source. */
 @Versioning.added(Versions.v0_1)
-model PersonIncomeSourceType extends Fields.ExtensibleEnumT<PersonIncomeSourceTypeOptions> {}
+model PersonIncomeSourceType is Fields.ExtensibleEnumT<PersonIncomeSourceTypeOptions>;
 
 // #########################################################
 // PersonIncomeSource

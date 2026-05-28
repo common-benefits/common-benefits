@@ -39,7 +39,7 @@ enum HouseholdRelationshipTypeOptions {
 
 /** The type of a relationship between two household members. */
 @Versioning.added(Versions.v0_1)
-model HouseholdRelationshipType extends Fields.ExtensibleEnumT<HouseholdRelationshipTypeOptions> {}
+model HouseholdRelationshipType is Fields.ExtensibleEnumT<HouseholdRelationshipTypeOptions>;
 
 // #########################################################
 // HouseholdRelationship
