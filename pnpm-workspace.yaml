@@ -22,7 +22,7 @@ catalog:
   eslint-plugin-prettier: ^5.5.5
   globals: ^17.6.0
   prettier: ^3.8.3
-  typescript: ^6.0.3
+  typescript: ~5.9.0
   typescript-eslint: ^8.59.4
   # Test
   vitest: ^4.1.7
