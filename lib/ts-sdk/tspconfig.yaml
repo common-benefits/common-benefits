@@ -1,5 +1,19 @@
 emit:
   - "typespec-zod"
+  - "@typespec/json-schema"
 options:
+  "@typespec/json-schema":
+    file-type: "yaml"
+    bundleId: "schemas.yaml"
   "typespec-zod":
-    emitter-output-dir: "{project-root}/src/generated"
+    emitter-output-dir: "{project-root}/src/schemas"
+    # Scoped to namespaces without template instantiations. typespec-zod
+    # emits a separate declaration per instantiation under the template's
+    # base name, which collides for routes that use Paginated<T>/OkT<T>/etc.
+    include-namespaces:
+      - "CommonBenefits.Types"
+      - "CommonBenefits.Fields"
+      - "CommonBenefits.Filters"
+      - "CommonBenefits.Models"
+      - "CommonBenefits.Pagination"
+      - "CommonBenefits.Sorting"
