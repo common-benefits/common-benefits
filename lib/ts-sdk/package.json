@@ -1,6 +1,6 @@
 {
   "name": "@common-benefits/sdk",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "The CommonBenefits TypeScript SDK (Zod schemas generated from TypeSpec)",
   "type": "module",
   "main": "dist/index.js",
