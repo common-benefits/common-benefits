@@ -2,15 +2,15 @@
   "name": "@common-benefits/sdk",
   "version": "0.0.1",
   "description": "The CommonBenefits TypeScript SDK (Zod schemas generated from TypeSpec)",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
     }
   },
   "files": [
