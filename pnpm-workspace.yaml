@@ -4,6 +4,11 @@ packages:
 
 catalog:
   # TypeSpec — most packages are on the 1.12.x track; rest+versioning are on 0.82.x
+  # Cloudflare
+  "@cloudflare/workers-types": ^4.20260523.1
+  # Tooling
+  "@eslint/js": ^10.0.1
+  "@types/node": ^25.9.1
   "@typespec/compiler": ^1.12.0
   "@typespec/http": ^1.12.0
   "@typespec/json-schema": ^1.12.0
@@ -11,24 +16,20 @@ catalog:
   "@typespec/openapi3": ^1.12.0
   "@typespec/rest": ^0.82.0
   "@typespec/versioning": ^0.82.0
-  # Zod emitter — pinned exactly because of rolling 0.0.0-N versioning scheme.
-  # Replace with @common-benefits/typespec-zod once forked.
-  typespec-zod: 0.0.0-68
-  # Tooling
-  "@eslint/js": ^10.0.1
-  "@types/node": ^25.9.1
+  "@vitest/coverage-v8": ^4.1.7
   eslint: ^10.4.0
   eslint-config-prettier: ^10.1.8
   eslint-plugin-prettier: ^5.5.5
   globals: ^17.6.0
   prettier: ^3.8.3
-  typescript: ^6.0.3
+  typescript: ^5.9.3
   typescript-eslint: ^8.59.4
+  # Zod emitter is declared directly in lib/ts-sdk/package.json (not via the
+  # catalog) while we consume a local fork via `file:`. Catalogs do not yet
+  # accept the `file:` protocol; switch back to a catalog version once the
+  # fork branches land upstream.
   # Test
   vitest: ^4.1.7
-  "@vitest/coverage-v8": ^4.1.7
+  wrangler: ^4.94.0
   # Runtime
   zod: ^4.4.3
-  # Cloudflare
-  "@cloudflare/workers-types": ^4.20260523.1
-  wrangler: ^4.94.0
