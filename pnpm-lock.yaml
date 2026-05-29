@@ -55,14 +55,11 @@ catalogs:
       specifier: ^3.8.3
       version: 3.8.3
     typescript:
-      specifier: ^6.0.3
-      version: 6.0.3
+      specifier: ^5.9.3
+      version: 5.9.3
     typescript-eslint:
       specifier: ^8.59.4
       version: 8.59.4
-    typespec-zod:
-      specifier: 0.0.0-68
-      version: 0.0.0-68
     vitest:
       specifier: ^4.1.7
       version: 4.1.7
@@ -118,10 +115,10 @@ importers:
         version: 3.8.3
       typescript:
         specifier: 'catalog:'
-        version: 6.0.3
+        version: 5.9.3
       typescript-eslint:
         specifier: 'catalog:'
-        version: 8.59.4(eslint@10.4.0)(typescript@6.0.3)
+        version: 8.59.4(eslint@10.4.0)(typescript@5.9.3)
 
   lib/ts-sdk:
     dependencies:
@@ -135,6 +132,9 @@ importers:
       '@eslint/js':
         specifier: 'catalog:'
         version: 10.0.1(eslint@10.4.0)
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/node':
         specifier: 'catalog:'
         version: 25.9.1
@@ -162,6 +162,12 @@ importers:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 4.1.7(vitest@4.1.7)
+      ajv:
+        specifier: ^8.20.0
+        version: 8.20.0
+      ajv-formats:
+        specifier: ^3.0.1
+        version: 3.0.1(ajv@8.20.0)
       eslint:
         specifier: 'catalog:'
         version: 10.4.0
@@ -174,18 +180,24 @@ importers:
       globals:
         specifier: 'catalog:'
         version: 17.6.0
+      js-yaml:
+        specifier: ^4.1.1
+        version: 4.1.1
+      json-schema-faker:
+        specifier: ^0.6.1
+        version: 0.6.2
       prettier:
         specifier: 'catalog:'
         version: 3.8.3
       typescript:
         specifier: 'catalog:'
-        version: 6.0.3
+        version: 5.9.3
       typescript-eslint:
         specifier: 'catalog:'
-        version: 8.59.4(eslint@10.4.0)(typescript@6.0.3)
+        version: 8.59.4(eslint@10.4.0)(typescript@5.9.3)
       typespec-zod:
-        specifier: 'catalog:'
-        version: 0.0.0-68(@alloy-js/core@0.22.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))(@typespec/emitter-framework@0.15.0(@alloy-js/core@0.22.0)(@alloy-js/csharp@0.22.0)(@alloy-js/python@0.3.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1)))
+        specifier: github:widal001/typespec-zod#4f570ac37387186bbb1896f9ddf595ae5038a5f6
+        version: https://codeload.github.com/widal001/typespec-zod/tar.gz/4f570ac37387186bbb1896f9ddf595ae5038a5f6(@alloy-js/core@0.22.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))(@typespec/emitter-framework@0.15.0(@alloy-js/core@0.22.0)(@alloy-js/csharp@0.22.0)(@alloy-js/python@0.3.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1)))
       vitest:
         specifier: 'catalog:'
         version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(vite@7.3.3(@types/node@25.9.1)(yaml@2.9.0))
@@ -197,7 +209,7 @@ importers:
         version: 15.3.5(@types/json-schema@7.0.15)
       '@astrojs/starlight':
         specifier: ^0.39.2
-        version: 0.39.2(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))(typescript@6.0.3)
+        version: 0.39.2(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))(typescript@5.9.3)
       astro:
         specifier: ^6.3.7
         version: 6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0)
@@ -215,14 +227,14 @@ importers:
         version: 0.34.5
       starlight-links-validator:
         specifier: ^0.24.0
-        version: 0.24.0(@astrojs/starlight@0.39.2(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))(typescript@6.0.3))(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))
+        version: 0.24.0(@astrojs/starlight@0.39.2(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))(typescript@5.9.3))(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))
       swagger-ui-dist:
         specifier: ^5.32.6
         version: 5.32.6
     devDependencies:
       '@astrojs/check':
         specifier: ^0.9.9
-        version: 0.9.9(prettier-plugin-astro@0.14.1)(prettier@3.8.3)(typescript@6.0.3)
+        version: 0.9.9(prettier-plugin-astro@0.14.1)(prettier@3.8.3)(typescript@5.9.3)
       '@cloudflare/workers-types':
         specifier: 'catalog:'
         version: 4.20260523.1
@@ -270,10 +282,10 @@ importers:
         version: 0.14.1
       typescript:
         specifier: 'catalog:'
-        version: 6.0.3
+        version: 5.9.3
       typescript-eslint:
         specifier: 'catalog:'
-        version: 8.59.4(eslint@10.4.0)(typescript@6.0.3)
+        version: 8.59.4(eslint@10.4.0)(typescript@5.9.3)
       vitest:
         specifier: 'catalog:'
         version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(vite@7.3.3(@types/node@25.9.1)(yaml@2.9.0))
@@ -2583,6 +2595,10 @@ packages:
   json-schema-compare@0.2.2:
     resolution: {integrity: sha512-c4WYmDKyJXhs7WWvAWm3uIYnfyWFoIp+JEoX34rctVvEkMYCPGhXtvmFFXiffBbxfZsvQ0RNnV5H7GvDF5HCqQ==}
 
+  json-schema-faker@0.6.2:
+    resolution: {integrity: sha512-jhOV/bIUxTPM3DiKaa9YDI9UIhO6md1wBnopuIleXATBCwBxnpEfUG0KZqWJS0nTc7nGeWu6ve4vL7Sk7l2BKA==}
+    hasBin: true
+
   json-schema-merge-allof@0.8.1:
     resolution: {integrity: sha512-CTUKmIlPJbsWfzRRnOXz+0MjIqvnleIXwFTzz+t9T86HnYX/Rozria6ZVGLktAU9e+NygNljveP+yxqtQp/Q4w==}
     engines: {node: '>=12.0.0'}
@@ -3387,13 +3403,14 @@ packages:
       eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
       typescript: '>=4.8.4 <6.1.0'
 
-  typescript@6.0.3:
-    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typespec-zod@0.0.0-68:
-    resolution: {integrity: sha512-Fw7VpRrnkbDUo+HPux8xyYdnpteTLioz/dEeMbNCSRA8q9pM/oe7/Tm4WA0nhD996GCktskACUDsegof38ivJQ==}
+  typespec-zod@https://codeload.github.com/widal001/typespec-zod/tar.gz/4f570ac37387186bbb1896f9ddf595ae5038a5f6:
+    resolution: {tarball: https://codeload.github.com/widal001/typespec-zod/tar.gz/4f570ac37387186bbb1896f9ddf595ae5038a5f6}
+    version: 1.0.0-preview.10
     peerDependencies:
       '@alloy-js/core': ^0.22.0
       '@alloy-js/typescript': ^0.22.0
@@ -3894,12 +3911,12 @@ snapshots:
       '@types/json-schema': 7.0.15
       js-yaml: 4.1.1
 
-  '@astrojs/check@0.9.9(prettier-plugin-astro@0.14.1)(prettier@3.8.3)(typescript@6.0.3)':
+  '@astrojs/check@0.9.9(prettier-plugin-astro@0.14.1)(prettier@3.8.3)(typescript@5.9.3)':
     dependencies:
-      '@astrojs/language-server': 2.16.9(prettier-plugin-astro@0.14.1)(prettier@3.8.3)(typescript@6.0.3)
+      '@astrojs/language-server': 2.16.9(prettier-plugin-astro@0.14.1)(prettier@3.8.3)(typescript@5.9.3)
       chokidar: 4.0.3
       kleur: 4.1.5
-      typescript: 6.0.3
+      typescript: 5.9.3
       yargs: 17.7.2
     transitivePeerDependencies:
       - prettier
@@ -3915,12 +3932,12 @@ snapshots:
     dependencies:
       picomatch: 4.0.4
 
-  '@astrojs/language-server@2.16.9(prettier-plugin-astro@0.14.1)(prettier@3.8.3)(typescript@6.0.3)':
+  '@astrojs/language-server@2.16.9(prettier-plugin-astro@0.14.1)(prettier@3.8.3)(typescript@5.9.3)':
     dependencies:
       '@astrojs/compiler': 2.13.1
       '@astrojs/yaml2ts': 0.2.4
       '@jridgewell/sourcemap-codec': 1.5.5
-      '@volar/kit': 2.4.28(typescript@6.0.3)
+      '@volar/kit': 2.4.28(typescript@5.9.3)
       '@volar/language-core': 2.4.28
       '@volar/language-server': 2.4.28
       '@volar/language-service': 2.4.28
@@ -3996,7 +4013,7 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 4.4.3
 
-  '@astrojs/starlight@0.39.2(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))(typescript@6.0.3)':
+  '@astrojs/starlight@0.39.2(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))(typescript@5.9.3)':
     dependencies:
       '@astrojs/markdown-remark': 7.1.2
       '@astrojs/mdx': 5.0.6(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))
@@ -4012,7 +4029,7 @@ snapshots:
       hast-util-select: 6.0.4
       hast-util-to-string: 3.0.1
       hastscript: 9.0.1
-      i18next: 26.2.0(typescript@6.0.3)
+      i18next: 26.2.0(typescript@5.9.3)
       js-yaml: 4.1.1
       klona: 2.0.6
       magic-string: 0.30.21
@@ -4922,40 +4939,40 @@ snapshots:
 
   '@types/unist@3.0.3': {}
 
-  '@typescript-eslint/eslint-plugin@8.59.4(@typescript-eslint/parser@8.59.4(eslint@10.4.0)(typescript@6.0.3))(eslint@10.4.0)(typescript@6.0.3)':
+  '@typescript-eslint/eslint-plugin@8.59.4(@typescript-eslint/parser@8.59.4(eslint@10.4.0)(typescript@5.9.3))(eslint@10.4.0)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
-      '@typescript-eslint/parser': 8.59.4(eslint@10.4.0)(typescript@6.0.3)
+      '@typescript-eslint/parser': 8.59.4(eslint@10.4.0)(typescript@5.9.3)
       '@typescript-eslint/scope-manager': 8.59.4
-      '@typescript-eslint/type-utils': 8.59.4(eslint@10.4.0)(typescript@6.0.3)
-      '@typescript-eslint/utils': 8.59.4(eslint@10.4.0)(typescript@6.0.3)
+      '@typescript-eslint/type-utils': 8.59.4(eslint@10.4.0)(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.59.4(eslint@10.4.0)(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 8.59.4
       eslint: 10.4.0
       ignore: 7.0.5
       natural-compare: 1.4.0
-      ts-api-utils: 2.5.0(typescript@6.0.3)
-      typescript: 6.0.3
+      ts-api-utils: 2.5.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/parser@8.59.4(eslint@10.4.0)(typescript@6.0.3)':
+  '@typescript-eslint/parser@8.59.4(eslint@10.4.0)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.59.4
       '@typescript-eslint/types': 8.59.4
-      '@typescript-eslint/typescript-estree': 8.59.4(typescript@6.0.3)
+      '@typescript-eslint/typescript-estree': 8.59.4(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 8.59.4
       debug: 4.4.3
       eslint: 10.4.0
-      typescript: 6.0.3
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/project-service@8.59.4(typescript@6.0.3)':
+  '@typescript-eslint/project-service@8.59.4(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.59.4(typescript@6.0.3)
+      '@typescript-eslint/tsconfig-utils': 8.59.4(typescript@5.9.3)
       '@typescript-eslint/types': 8.59.4
       debug: 4.4.3
-      typescript: 6.0.3
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -4964,47 +4981,47 @@ snapshots:
       '@typescript-eslint/types': 8.59.4
       '@typescript-eslint/visitor-keys': 8.59.4
 
-  '@typescript-eslint/tsconfig-utils@8.59.4(typescript@6.0.3)':
+  '@typescript-eslint/tsconfig-utils@8.59.4(typescript@5.9.3)':
     dependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
 
-  '@typescript-eslint/type-utils@8.59.4(eslint@10.4.0)(typescript@6.0.3)':
+  '@typescript-eslint/type-utils@8.59.4(eslint@10.4.0)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/types': 8.59.4
-      '@typescript-eslint/typescript-estree': 8.59.4(typescript@6.0.3)
-      '@typescript-eslint/utils': 8.59.4(eslint@10.4.0)(typescript@6.0.3)
+      '@typescript-eslint/typescript-estree': 8.59.4(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.59.4(eslint@10.4.0)(typescript@5.9.3)
       debug: 4.4.3
       eslint: 10.4.0
-      ts-api-utils: 2.5.0(typescript@6.0.3)
-      typescript: 6.0.3
+      ts-api-utils: 2.5.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
   '@typescript-eslint/types@8.59.4': {}
 
-  '@typescript-eslint/typescript-estree@8.59.4(typescript@6.0.3)':
+  '@typescript-eslint/typescript-estree@8.59.4(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/project-service': 8.59.4(typescript@6.0.3)
-      '@typescript-eslint/tsconfig-utils': 8.59.4(typescript@6.0.3)
+      '@typescript-eslint/project-service': 8.59.4(typescript@5.9.3)
+      '@typescript-eslint/tsconfig-utils': 8.59.4(typescript@5.9.3)
       '@typescript-eslint/types': 8.59.4
       '@typescript-eslint/visitor-keys': 8.59.4
       debug: 4.4.3
       minimatch: 10.2.5
       semver: 7.8.1
       tinyglobby: 0.2.16
-      ts-api-utils: 2.5.0(typescript@6.0.3)
-      typescript: 6.0.3
+      ts-api-utils: 2.5.0(typescript@5.9.3)
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.59.4(eslint@10.4.0)(typescript@6.0.3)':
+  '@typescript-eslint/utils@8.59.4(eslint@10.4.0)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.4.0)
       '@typescript-eslint/scope-manager': 8.59.4
       '@typescript-eslint/types': 8.59.4
-      '@typescript-eslint/typescript-estree': 8.59.4(typescript@6.0.3)
+      '@typescript-eslint/typescript-estree': 8.59.4(typescript@5.9.3)
       eslint: 10.4.0
-      typescript: 6.0.3
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
@@ -5141,12 +5158,12 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@volar/kit@2.4.28(typescript@6.0.3)':
+  '@volar/kit@2.4.28(typescript@5.9.3)':
     dependencies:
       '@volar/language-service': 2.4.28
       '@volar/typescript': 2.4.28
       typesafe-path: 0.2.2
-      typescript: 6.0.3
+      typescript: 5.9.3
       vscode-languageserver-textdocument: 1.0.12
       vscode-uri: 3.1.0
 
@@ -6158,9 +6175,9 @@ snapshots:
 
   http-cache-semantics@4.2.0: {}
 
-  i18next@26.2.0(typescript@6.0.3):
+  i18next@26.2.0(typescript@5.9.3):
     optionalDependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
 
   iconv-lite@0.7.2:
     dependencies:
@@ -6249,6 +6266,8 @@ snapshots:
   json-schema-compare@0.2.2:
     dependencies:
       lodash: 4.18.1
+
+  json-schema-faker@0.6.2: {}
 
   json-schema-merge-allof@0.8.1:
     dependencies:
@@ -7297,9 +7316,9 @@ snapshots:
 
   stackback@0.0.2: {}
 
-  starlight-links-validator@0.24.0(@astrojs/starlight@0.39.2(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))(typescript@6.0.3))(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0)):
+  starlight-links-validator@0.24.0(@astrojs/starlight@0.39.2(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))(typescript@5.9.3))(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0)):
     dependencies:
-      '@astrojs/starlight': 0.39.2(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))(typescript@6.0.3)
+      '@astrojs/starlight': 0.39.2(astro@6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0))(typescript@5.9.3)
       '@types/picomatch': 4.0.3
       astro: 6.3.7(@types/node@25.9.1)(rollup@4.60.4)(yaml@2.9.0)
       github-slugger: 2.0.0
@@ -7428,9 +7447,9 @@ snapshots:
 
   trough@2.2.0: {}
 
-  ts-api-utils@2.5.0(typescript@6.0.3):
+  ts-api-utils@2.5.0(typescript@5.9.3):
     dependencies:
-      typescript: 6.0.3
+      typescript: 5.9.3
 
   tslib@2.8.1:
     optional: true
@@ -7445,20 +7464,20 @@ snapshots:
     dependencies:
       semver: 7.8.1
 
-  typescript-eslint@8.59.4(eslint@10.4.0)(typescript@6.0.3):
+  typescript-eslint@8.59.4(eslint@10.4.0)(typescript@5.9.3):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 8.59.4(@typescript-eslint/parser@8.59.4(eslint@10.4.0)(typescript@6.0.3))(eslint@10.4.0)(typescript@6.0.3)
-      '@typescript-eslint/parser': 8.59.4(eslint@10.4.0)(typescript@6.0.3)
-      '@typescript-eslint/typescript-estree': 8.59.4(typescript@6.0.3)
-      '@typescript-eslint/utils': 8.59.4(eslint@10.4.0)(typescript@6.0.3)
+      '@typescript-eslint/eslint-plugin': 8.59.4(@typescript-eslint/parser@8.59.4(eslint@10.4.0)(typescript@5.9.3))(eslint@10.4.0)(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.59.4(eslint@10.4.0)(typescript@5.9.3)
+      '@typescript-eslint/typescript-estree': 8.59.4(typescript@5.9.3)
+      '@typescript-eslint/utils': 8.59.4(eslint@10.4.0)(typescript@5.9.3)
       eslint: 10.4.0
-      typescript: 6.0.3
+      typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  typescript@6.0.3: {}
+  typescript@5.9.3: {}
 
-  typespec-zod@0.0.0-68(@alloy-js/core@0.22.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))(@typespec/emitter-framework@0.15.0(@alloy-js/core@0.22.0)(@alloy-js/csharp@0.22.0)(@alloy-js/python@0.3.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))):
+  typespec-zod@https://codeload.github.com/widal001/typespec-zod/tar.gz/4f570ac37387186bbb1896f9ddf595ae5038a5f6(@alloy-js/core@0.22.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))(@typespec/emitter-framework@0.15.0(@alloy-js/core@0.22.0)(@alloy-js/csharp@0.22.0)(@alloy-js/python@0.3.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))):
     dependencies:
       '@alloy-js/core': 0.22.0
       '@alloy-js/typescript': 0.22.0

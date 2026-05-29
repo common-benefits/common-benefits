@@ -2,7 +2,6 @@
   "name": "@common-benefits/sdk",
   "version": "0.0.1",
   "description": "The CommonBenefits TypeScript SDK (Zod schemas generated from TypeSpec)",
-  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "publishConfig": {
@@ -12,6 +11,18 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.ts",
+      "default": "./dist/schemas/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "default": "./dist/types.js"
+    },
+    "./constants": {
+      "types": "./dist/constants.d.ts",
+      "default": "./dist/constants.js"
     }
   },
   "files": [
@@ -28,7 +39,7 @@
     "zod"
   ],
   "scripts": {
-    "clean": "rm -rf dist tsp-output src/generated",
+    "clean": "rm -rf dist tsp-output",
     "build": "tsc -p .",
     "typespec": "tsp compile lib/main.tsp",
     "prepare": "pnpm run build",
@@ -49,6 +60,7 @@
   "devDependencies": {
     "@common-benefits/core": "workspace:*",
     "@eslint/js": "catalog:",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "catalog:",
     "@typespec/compiler": "catalog:",
     "@typespec/http": "catalog:",
@@ -58,14 +70,18 @@
     "@typespec/rest": "catalog:",
     "@typespec/versioning": "catalog:",
     "@vitest/coverage-v8": "catalog:",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
     "eslint-plugin-prettier": "catalog:",
     "globals": "catalog:",
+    "js-yaml": "^4.1.1",
+    "json-schema-faker": "^0.6.1",
     "prettier": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
-    "typespec-zod": "catalog:",
+    "typespec-zod": "github:widal001/typespec-zod#4f570ac37387186bbb1896f9ddf595ae5038a5f6",
     "vitest": "catalog:"
   }
 }
