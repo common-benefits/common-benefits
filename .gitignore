@@ -13,9 +13,6 @@ tsp-output/
 website/public/schemas/yaml/
 website/public/openapi/
 
-# typespec-zod generated SDK code (regenerated on each build)
-lib/ts-sdk/src/schemas/models.ts
-
 # Astro
 .astro/
 
