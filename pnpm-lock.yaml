@@ -196,8 +196,8 @@ importers:
         specifier: 'catalog:'
         version: 8.59.4(eslint@10.4.0)(typescript@5.9.3)
       typespec-zod:
-        specifier: file:../../../typespec-zod
-        version: file:../typespec-zod(@alloy-js/core@0.22.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))(@typespec/emitter-framework@0.15.0(@alloy-js/core@0.22.0)(@alloy-js/csharp@0.22.0)(@alloy-js/python@0.3.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1)))
+        specifier: github:widal001/typespec-zod#2632e6299505aa209eeee749dcbe478e16a8dc42
+        version: https://codeload.github.com/widal001/typespec-zod/tar.gz/2632e6299505aa209eeee749dcbe478e16a8dc42(@alloy-js/core@0.22.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))(@typespec/emitter-framework@0.15.0(@alloy-js/core@0.22.0)(@alloy-js/csharp@0.22.0)(@alloy-js/python@0.3.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1)))
       vitest:
         specifier: 'catalog:'
         version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(vite@7.3.3(@types/node@25.9.1)(yaml@2.9.0))
@@ -3408,8 +3408,9 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typespec-zod@file:../typespec-zod:
-    resolution: {directory: ../typespec-zod, type: directory}
+  typespec-zod@https://codeload.github.com/widal001/typespec-zod/tar.gz/2632e6299505aa209eeee749dcbe478e16a8dc42:
+    resolution: {tarball: https://codeload.github.com/widal001/typespec-zod/tar.gz/2632e6299505aa209eeee749dcbe478e16a8dc42}
+    version: 1.0.0-preview.10
     peerDependencies:
       '@alloy-js/core': ^0.22.0
       '@alloy-js/typescript': ^0.22.0
@@ -7476,7 +7477,7 @@ snapshots:
 
   typescript@5.9.3: {}
 
-  typespec-zod@file:../typespec-zod(@alloy-js/core@0.22.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))(@typespec/emitter-framework@0.15.0(@alloy-js/core@0.22.0)(@alloy-js/csharp@0.22.0)(@alloy-js/python@0.3.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))):
+  typespec-zod@https://codeload.github.com/widal001/typespec-zod/tar.gz/2632e6299505aa209eeee749dcbe478e16a8dc42(@alloy-js/core@0.22.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))(@typespec/emitter-framework@0.15.0(@alloy-js/core@0.22.0)(@alloy-js/csharp@0.22.0)(@alloy-js/python@0.3.0)(@alloy-js/typescript@0.22.0)(@typespec/compiler@1.12.0(@types/node@25.9.1))):
     dependencies:
       '@alloy-js/core': 0.22.0
       '@alloy-js/typescript': 0.22.0

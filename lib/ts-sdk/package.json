@@ -81,7 +81,7 @@
     "prettier": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
-    "typespec-zod": "file:../../../typespec-zod",
+    "typespec-zod": "github:widal001/typespec-zod#2632e6299505aa209eeee749dcbe478e16a8dc42",
     "vitest": "catalog:"
   }
 }

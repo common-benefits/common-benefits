@@ -25,11 +25,18 @@ catalog:
   typescript: ^5.9.3
   typescript-eslint: ^8.59.4
   # Zod emitter is declared directly in lib/ts-sdk/package.json (not via the
-  # catalog) while we consume a local fork via `file:`. Catalogs do not yet
-  # accept the `file:` protocol; switch back to a catalog version once the
-  # fork branches land upstream.
+  # catalog) while we consume the widal001/typespec-zod fork via a git dep
+  # pinned to a commit on the `combined-fixes` branch. Catalogs do not yet
+  # accept git URLs; switch back to a catalog version once the fork branches
+  # land upstream.
   # Test
   vitest: ^4.1.7
   wrangler: ^4.94.0
   # Runtime
   zod: ^4.4.3
+
+# Build scripts the workspace explicitly allows to run on install (pnpm 10
+# blocks them by default for safety). typespec-zod's `prepare` step runs
+# `alloy build` to materialize the dist when installed from git.
+onlyBuiltDependencies:
+  - typespec-zod
