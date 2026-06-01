@@ -104,20 +104,6 @@ export const EXTENSIBLE_SCHEMA_MAP = {
 } as const satisfies Record<ExtensibleSchemaName, HasCustomFields>;
 
 // ############################################################################
-// CustomFieldExtensions (consumed by mergeExtensions)
-// ############################################################################
-
-/**
- * A plain mapping of extensible model name → custom-field specs by field name.
- *
- * `mergeExtensions()` operates on this shape. The richer per-entry shape used
- * by `definePlugin()` is {@link SchemaExtensions}.
- */
-export type CustomFieldExtensions = Partial<
-  Record<ExtensibleSchemaName, Record<string, CustomFieldSpec>>
->;
-
-// ############################################################################
 // SchemaExtensions / PluginSchemaEntry (consumed by definePlugin)
 // ############################################################################
 

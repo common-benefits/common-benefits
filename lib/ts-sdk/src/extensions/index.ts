@@ -5,7 +5,6 @@
  * - `definePlugin()` / `Plugin`
  * - `buildGetClient()` / `BuiltClient`
  * - `withCustomFields()` / `withCustomFilters()`
- * - `mergeExtensions()`
  * - `getCustomFieldValue()`
  * - `f` filter helpers
  */
@@ -28,9 +27,6 @@ export type { WithCustomFieldsResult } from "./with-custom-fields";
 export { withCustomFilters } from "./with-custom-filters";
 export type { WithCustomFiltersResult } from "./with-custom-filters";
 
-export { mergeExtensions } from "./merge-extensions";
-export type { MergeExtensionsOptions, MergedSchemaExtensions } from "./merge-extensions";
-
 export { getCustomFieldValue } from "./get-custom-field-value";
 
 export { f } from "./filter-helpers";
@@ -39,7 +35,6 @@ export { CUSTOM_FILTER_SCHEMA_MAP, type CustomFilterSchema } from "./filter-type
 
 export { EXTENSIBLE_SCHEMA_MAP } from "./plugin-types";
 export type {
-  CustomFieldExtensions,
   CustomFieldSpec,
   CustomFieldType,
   CustomFilterSpec,
