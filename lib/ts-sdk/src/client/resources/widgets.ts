@@ -38,7 +38,7 @@ type FiltersSchema<TFilters extends Record<string, unknown>> = z.ZodType<TFilter
 // Options
 // =============================================================================
 
-export interface ListOptions {
+export interface ListOptions<TOut extends WidgetBase = WidgetBase> {
   /** Specific page to fetch (disables auto-pagination when set) */
   page?: number;
   /** Items per page */
@@ -47,11 +47,17 @@ export interface ListOptions {
   maxItems?: number;
   /** Abort signal */
   signal?: AbortSignal;
+  /**
+   * Override the schema used to parse items for this call only. Defaults to the
+   * schema bound at build time (the base schema, or a plugin's extended schema).
+   */
+  schema?: WidgetSchema<TOut>;
 }
 
 export interface SearchOptions<
+  TOut extends WidgetBase = WidgetBase,
   TFilters extends Record<string, unknown> = Record<string, unknown>,
-> extends ListOptions {
+> extends ListOptions<TOut> {
   /** Optional free-text query */
   query?: string;
   /** Per-route filter bag (validated against `filtersSchema` when provided) */
@@ -117,8 +123,17 @@ export class Widgets<
     this.filtersSchema = options.filtersSchema;
   }
 
-  /** Fetch a single widget by id. Throws if the response fails to parse. */
-  async get(id: string): Promise<TItem> {
+  /**
+   * Fetch a single widget by id. Throws if the response fails to parse.
+   *
+   * Pass `options.schema` to parse this call with a one-off schema; otherwise
+   * the schema bound at build time is used.
+   */
+  async get<TOut extends WidgetBase = TItem>(
+    id: string,
+    options?: { schema?: WidgetSchema<TOut> }
+  ): Promise<TOut> {
+    const schema = (options?.schema ?? this.itemSchema) as unknown as WidgetSchema<TOut>;
     const response = await this.client.get(`${this.basePath}/${id}`);
     if (!response.ok) {
       throw new ApiError(`Failed to get widget ${id}: ${response.status} ${response.statusText}`, {
@@ -129,15 +144,19 @@ export class Widgets<
     }
 
     const json = await response.json();
-    const envelope = OkSchema(this.itemSchema).parse(json);
-    return envelope.data as TItem;
+    const envelope = OkSchema(schema).parse(json);
+    return envelope.data as TOut;
   }
 
   /**
    * List widgets with auto-pagination. Per-record parse failures are reported
    * via `items[i].ok === false` and aggregated in `parseErrors`.
    */
-  async list(options?: ListOptions): Promise<WidgetsListResult<TItem>> {
+  async list<TOut extends WidgetBase = TItem>(
+    options?: ListOptions<TOut>
+  ): Promise<WidgetsListResult<TOut>> {
+    const schema = (options?.schema ?? this.itemSchema) as unknown as WidgetSchema<TOut>;
+
     if (options?.page !== undefined) {
       const params: Record<string, number> = { page: options.page };
       if (options.pageSize) params.pageSize = options.pageSize;
@@ -155,7 +174,7 @@ export class Widgets<
       }
       const json = await response.json();
       const envelope = PaginatedSchema(z.unknown()).parse(json);
-      const parsed = parseBatch(this.itemSchema, envelope.items, "widgets.list");
+      const parsed = parseBatch(schema, envelope.items, "widgets.list");
       return {
         ...envelope,
         items: parsed.items,
@@ -169,7 +188,7 @@ export class Widgets<
       maxItems: options?.maxItems,
       signal: options?.signal,
     });
-    const parsed = parseBatch(this.itemSchema, envelope.items, "widgets.list");
+    const parsed = parseBatch(schema, envelope.items, "widgets.list");
     return {
       ...envelope,
       items: parsed.items,
@@ -182,7 +201,10 @@ export class Widgets<
    * before sending the request; surfaces per-record parse failures the same
    * way `list()` does.
    */
-  async search(options?: SearchOptions<TFilters>): Promise<WidgetsSearchResult<TItem, TFilters>> {
+  async search<TOut extends WidgetBase = TItem>(
+    options?: SearchOptions<TOut, TFilters>
+  ): Promise<WidgetsSearchResult<TOut, TFilters>> {
+    const schema = (options?.schema ?? this.itemSchema) as unknown as WidgetSchema<TOut>;
     const body: Record<string, unknown> = {};
     if (options?.query) body.search = options.query;
     if (options?.filters) {
@@ -214,12 +236,12 @@ export class Widgets<
       const json = await response.json();
       const filterSchema = this.filtersSchema ?? z.unknown();
       const envelope = FilteredSchema(z.unknown(), filterSchema).parse(json);
-      const parsed = parseBatch(this.itemSchema, envelope.items, "widgets.search");
+      const parsed = parseBatch(schema, envelope.items, "widgets.search");
       return {
         ...envelope,
         items: parsed.items,
         parseErrors: parsed.errors,
-      } as WidgetsSearchResult<TItem, TFilters>;
+      } as WidgetsSearchResult<TOut, TFilters>;
     }
 
     const envelope = await this.client.fetchMany(path, {
@@ -230,15 +252,15 @@ export class Widgets<
       maxItems: options?.maxItems,
       signal: options?.signal,
     });
-    const parsed = parseBatch(this.itemSchema, envelope.items, "widgets.search");
+    const parsed = parseBatch(schema, envelope.items, "widgets.search");
     const filterInfo = (envelope as unknown as { filterInfo?: { filters: TFilters } }).filterInfo;
     const sortInfo = (envelope as unknown as { sortInfo?: unknown }).sortInfo;
     return {
       ...envelope,
       items: parsed.items,
       parseErrors: parsed.errors,
-      filterInfo: filterInfo as WidgetsSearchResult<TItem, TFilters>["filterInfo"],
-      sortInfo: sortInfo as WidgetsSearchResult<TItem, TFilters>["sortInfo"],
+      filterInfo: filterInfo as WidgetsSearchResult<TOut, TFilters>["filterInfo"],
+      sortInfo: sortInfo as WidgetsSearchResult<TOut, TFilters>["sortInfo"],
     };
   }
 }
