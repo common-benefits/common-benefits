@@ -19,6 +19,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/**/*", "__tests__/**/*"],
+  "include": ["src/**/*", "__tests__/**/*", "examples/**/*"],
   "exclude": ["node_modules", "dist"]
 }

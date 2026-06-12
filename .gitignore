@@ -38,6 +38,9 @@ lib/ts-sdk/src/generated/*
 # macOS
 .DS_Store
 
+# Local planning / scratch docs
+.docs/
+
 # Editor
 .vscode/*
 !.vscode/extensions.json
