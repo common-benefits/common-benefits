@@ -39,9 +39,11 @@ export {
 export {
   definePlugin,
   buildGetClient,
+  buildTransforms,
   withCustomFields,
   withCustomFilters,
   getCustomFieldValue,
+  TransformError,
   f,
   CUSTOM_FILTER_SCHEMA_MAP,
   EXTENSIBLE_SCHEMA_MAP,
@@ -50,11 +52,19 @@ export type {
   Plugin,
   PluginMeta,
   DefinePluginOptions,
-  ResolvedPluginSchemaEntry,
   ResolvedPluginSchemas,
+  SchemaOnly,
+  SchemaWithTransforms,
   BuildGetClientOptions,
   BuiltClient,
   ClientResources,
+  BuildTransformsOptions,
+  RawTransforms,
+  TransformResult,
+  CommonOf,
+  FromCommon,
+  ToCommon,
+  TransformTypes,
   WithCustomFieldsResult,
   WithCustomFiltersResult,
   CustomFieldSpec,
@@ -64,13 +74,21 @@ export type {
   CustomFilterSchema,
   ExtensibleObject,
   ExtensibleSchemaName,
+  FunctionsSchemaInput,
   HasCustomFields,
+  MappingsSchemaInput,
   PluginRoutes,
-  PluginSchemaEntry,
   RouteMethodSpec,
   RouteMethods,
   SchemaExtensions,
+  SchemaInput,
+  SchemaMappings,
+  SchemaOnlyInput,
 } from "./extensions";
+
+// Pure mapping runtime (Zod-free)
+export { transformWithMapping, getFromPath, DEFAULT_HANDLERS } from "./utils";
+export type { Handler, JsonValue, TransformWithMappingOptions } from "./utils";
 
 // Schemas — exposed as a namespace so callers can reach base schemas directly
 export * as schemas from "./schemas";

@@ -14,9 +14,19 @@ export type {
   DefinePluginOptions,
   Plugin,
   PluginMeta,
-  ResolvedPluginSchemaEntry,
   ResolvedPluginSchemas,
+  SchemaOnly,
+  SchemaWithTransforms,
 } from "./define-plugin";
+
+// Transform layer
+export { TransformError } from "./transform-types";
+export type { TransformResult } from "./transform-types";
+export type { CommonOf, FromCommon, ToCommon, TransformTypes } from "./transform-helpers";
+// `buildTransforms` is `@internal` — exported for tests only, not part of the
+// public README surface.
+export { buildTransforms } from "./build-transforms";
+export type { BuildTransformsOptions, RawTransforms } from "./build-transforms";
 
 export { buildGetClient } from "./build-get-client";
 export type { BuildGetClientOptions, BuiltClient, ClientResources } from "./build-get-client";
@@ -41,10 +51,14 @@ export type {
   CustomFilterType,
   ExtensibleObject,
   ExtensibleSchemaName,
+  FunctionsSchemaInput,
   HasCustomFields,
+  MappingsSchemaInput,
   PluginRoutes,
-  PluginSchemaEntry,
   RouteMethodSpec,
   RouteMethods,
   SchemaExtensions,
+  SchemaInput,
+  SchemaMappings,
+  SchemaOnlyInput,
 } from "./plugin-types";

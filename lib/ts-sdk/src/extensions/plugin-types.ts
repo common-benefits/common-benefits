@@ -12,6 +12,8 @@ import { z } from "zod";
 import type { CustomFieldTypeEnum } from "../schemas/fields";
 import { WidgetBaseSchema } from "../schemas/widget";
 import { GadgetBaseSchema } from "../schemas/gadget";
+import type { Handler } from "../utils/transformation";
+import type { TransformResult } from "./transform-types";
 
 // ############################################################################
 // CustomFieldSpec / CustomFilterSpec
@@ -109,32 +111,83 @@ export const EXTENSIBLE_SCHEMA_MAP = {
 } as const satisfies Record<ExtensibleSchemaName, HasCustomFields>;
 
 // ############################################################################
-// SchemaExtensions / PluginSchemaEntry (consumed by definePlugin)
+// SchemaExtensions / SchemaInput (consumed by definePlugin)
 // ############################################################################
+
+/** Declarative bidirectional mappings supplied on a `SchemaInput` entry. */
+export interface SchemaMappings {
+  toCommon: Record<string, unknown>;
+  fromCommon: Record<string, unknown>;
+}
+
+/**
+ * Mappings authoring path: declarative `mappings` compiled by the
+ * `@internal buildTransforms`. Forbids hand-written `toCommon` / `fromCommon`.
+ */
+export interface MappingsSchemaInput {
+  /** Custom fields to attach via `withCustomFields()` */
+  customFields?: Record<string, CustomFieldSpec>;
+  /** Source-system Zod schema (the shape a source system returns) */
+  sourceSchema: z.ZodTypeAny;
+  /** Declarative mappings compiled into transforms by `definePlugin` */
+  mappings: SchemaMappings;
+  /** Custom mapping handlers registered for this entry's mappings only */
+  handlers?: Map<string, Handler>;
+  toCommon?: never;
+  fromCommon?: never;
+}
+
+/**
+ * Functions authoring path: hand-written `toCommon` / `fromCommon`. Forbids
+ * declarative `mappings`.
+ *
+ * The function slots are intentionally loose on the input side (`any`): a flat,
+ * multi-key `definePlugin` cannot infer per-entry `TCommon` to check an inline
+ * function, so `source` falls to `any`. The slot still pins the
+ * `TransformResult` envelope (a function returning a non-`TransformResult` is
+ * rejected). Authors recover full typing with the `ToCommon` / `FromCommon`
+ * helper types, and the resolved consumer-facing types are always correct.
+ */
+export interface FunctionsSchemaInput {
+  /** Custom fields to attach via `withCustomFields()` */
+  customFields?: Record<string, CustomFieldSpec>;
+  /** Source-system Zod schema (the shape a source system returns) */
+  sourceSchema: z.ZodTypeAny;
+  mappings?: never;
+  handlers?: never;
+  /** Map a parsed source record to common-schema shape */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  toCommon: (source: any) => TransformResult<unknown>;
+  /** Map a parsed common-schema record back to the source shape */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fromCommon: (common: any) => TransformResult<unknown>;
+}
+
+/** Schema-only path: custom fields, no transforms. Forbids both other paths. */
+export interface SchemaOnlyInput {
+  /** Custom fields to attach via `withCustomFields()` */
+  customFields: Record<string, CustomFieldSpec>;
+  sourceSchema?: never;
+  mappings?: never;
+  handlers?: never;
+  toCommon?: never;
+  fromCommon?: never;
+}
 
 /**
  * Per-model configuration accepted by `definePlugin()`.
  *
- * - `customFields` — drives `withCustomFields()` to produce `commonSchema`
- * - `sourceSchema` / `toCommon` / `fromCommon` — pass-through hooks the SDK
- *   stores but does NOT invoke. Consumers can pull them off `plugin.schemas[Name]`
- *   and run them at their own integration boundary.
+ * An exclusive choice: declarative `mappings` XOR hand-written `toCommon` /
+ * `fromCommon`, alongside `customFields` + `sourceSchema`; or `customFields`
+ * alone. Supplying both `mappings` and functions is a compile error (the
+ * `?: never` pairs).
  */
-export interface PluginSchemaEntry<TSource extends z.ZodTypeAny = z.ZodTypeAny> {
-  /** Custom fields to attach via `withCustomFields()` */
-  customFields?: Record<string, CustomFieldSpec>;
-  /** Optional native/source Zod schema (e.g. the shape a source system returns) */
-  sourceSchema?: TSource;
-  /** Map a parsed source record to common-schema shape */
-  toCommon?: (source: z.infer<TSource>) => unknown;
-  /** Map a parsed common-schema record back to the source shape */
-  fromCommon?: (common: unknown) => z.infer<TSource>;
-}
+export type SchemaInput = MappingsSchemaInput | FunctionsSchemaInput | SchemaOnlyInput;
 
 /**
  * Top-level `schemas:` input for `definePlugin()`.
  */
-export type SchemaExtensions = Partial<Record<ExtensibleSchemaName, PluginSchemaEntry>>;
+export type SchemaExtensions = Partial<Record<ExtensibleSchemaName, SchemaInput>>;
 
 // ############################################################################
 // PluginRoutes
