@@ -11,6 +11,7 @@
 import { z } from "zod";
 import type { CustomFieldTypeEnum } from "../schemas/fields";
 import { WidgetBaseSchema } from "../schemas/widget";
+import { GadgetBaseSchema } from "../schemas/gadget";
 
 // ############################################################################
 // CustomFieldSpec / CustomFilterSpec
@@ -89,10 +90,13 @@ export interface ExtensibleObject {
 /**
  * Names of base models that support custom-field extensions.
  *
- * For this scaffolding PR, only the dummy `Widget` schema is registered.
- * When the Programs route lands, `"Program"` joins (and `Widget` goes away).
+ * For this scaffolding PR, the dummy `Widget` schema and a second dummy
+ * `Gadget` schema are registered. `Gadget` exists only to prove the transform
+ * surface generalizes beyond a single hardcoded base (see the transforms plan,
+ * Task 9); remove it once a real second model lands. When the Programs route
+ * lands, `"Program"` joins (and `Widget` goes away).
  */
-export type ExtensibleSchemaName = "Widget";
+export type ExtensibleSchemaName = "Widget" | "Gadget";
 
 /**
  * Maps each extensible model to its base Zod schema. `definePlugin()` and
@@ -101,6 +105,7 @@ export type ExtensibleSchemaName = "Widget";
  */
 export const EXTENSIBLE_SCHEMA_MAP = {
   Widget: WidgetBaseSchema,
+  Gadget: GadgetBaseSchema,
 } as const satisfies Record<ExtensibleSchemaName, HasCustomFields>;
 
 // ############################################################################
