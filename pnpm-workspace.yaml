@@ -1,7 +1,6 @@
 packages:
   - lib/*
   - website
-  - examples
 
 catalog:
   # TypeSpec — most packages are on the 1.12.x track; rest+versioning are on 0.82.x

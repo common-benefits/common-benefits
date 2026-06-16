@@ -1,9 +1,9 @@
 /**
  * End-to-end plugin demo for `@common-benefits/sdk`.
  *
- * Run from the repo root:
+ * Run from `lib/ts-sdk`:
  *
- *   pnpm --filter @common-benefits/examples demo
+ *   pnpm dlx tsx examples/plugin-demo.ts
  *
  * Stubs `globalThis.fetch` so it runs offline — no API needed.
  *
@@ -22,7 +22,7 @@
  */
 
 import { z } from "zod";
-import { definePlugin, f } from "@common-benefits/sdk";
+import { definePlugin, f } from "../src";
 
 // ----------------------------------------------------------------------------
 // 1. Declare a plugin
@@ -59,20 +59,26 @@ const widgetsPlugin = definePlugin({
       toCommon: (source: unknown) => {
         const s = source as z.infer<typeof LegacyWidgetSchema>;
         return {
-          id: "123e4567-e89b-42d3-a456-426614174001",
-          name: s.legacy_name,
-          color: s.legacy_color,
-          weight: 1,
-          customFields: {
-            legacyId: {
-              name: "legacyId",
-              fieldType: "object",
-              value: { system: "legacy", id: s.legacy_id },
+          result: {
+            id: "123e4567-e89b-42d3-a456-426614174001",
+            name: s.legacy_name,
+            color: s.legacy_color,
+            weight: 1,
+            customFields: {
+              legacyId: {
+                name: "legacyId",
+                fieldType: "object",
+                value: { system: "legacy", id: s.legacy_id },
+              },
             },
           },
+          errors: [],
         };
       },
-      fromCommon: () => ({ legacy_id: 0, legacy_name: "", legacy_color: "" }),
+      fromCommon: () => ({
+        result: { legacy_id: 0, legacy_name: "", legacy_color: "" },
+        errors: [],
+      }),
     },
   },
 
@@ -194,8 +200,8 @@ async function main() {
 
   console.log("\n─── Source-system transforms ───");
   const sampleSource = { legacy_id: 99, legacy_name: "Imported", legacy_color: "green" };
-  const asCommon = widgetsPlugin.schemas.Widget.toCommon!(sampleSource);
-  console.log("  toCommon(sampleSource):", asCommon);
+  const asCommon = widgetsPlugin.schemas.Widget.toCommon(sampleSource);
+  console.log("  toCommon(sampleSource):", asCommon.result, "errors:", asCommon.errors.length);
 
   // ----------------------------------------------------------------------------
   // 5. Filter validation catches malformed inputs before the request.
@@ -214,7 +220,7 @@ async function main() {
   }
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error("demo failed:", err);
   process.exit(1);
 });
