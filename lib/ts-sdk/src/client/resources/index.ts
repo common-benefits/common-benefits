@@ -1,10 +1,5 @@
 export { Widgets } from "./widgets";
-export type {
-  WidgetsOptions,
-  ListOptions,
-  SearchOptions,
-  WidgetsListResult,
-  WidgetsSearchResult,
-} from "./widgets";
-export { RESOURCE_SCHEMA_MAP } from "./registry";
-export type { ResourceMethod, ResourceName } from "./registry";
+export type { ListOptions, SearchOptions, WidgetsListResult, WidgetsSearchResult } from "./widgets";
+export type { ResourceOptions, ResourceConstructor } from "./base";
+export { RESOURCE_REGISTRY } from "./registry";
+export type { ResourceMethod, ResourceName, ResourceRegistryEntry } from "./registry";

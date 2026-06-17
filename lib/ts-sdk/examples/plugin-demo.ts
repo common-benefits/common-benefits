@@ -85,10 +85,11 @@ const widgetsPlugin = definePlugin({
   routes: {
     widgets: {
       search: {
-        // Custom filters → typed, validated `search({ filters })` bag.
+        // `color`/`weight` are protocol DEFAULT filters (defined in the resource
+        // registry), so they aren't declared here. `tags` is a custom filter the
+        // plugin registers; both registered and ad hoc customs nest under
+        // `customFilters` in the request body.
         filters: {
-          color: { filterType: "stringComparison" },
-          weight: { filterType: "numberRange" },
           tags: { filterType: "stringArray" },
         },
       },
@@ -129,10 +130,15 @@ const badWidget = {
   customFields: null,
 };
 
+// Captures the most recent search request body so the demo can show how
+// `search()` categorized the flat filter bag into the wire shape.
+let lastSearchBody: unknown;
+
 globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
   const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
   const method = (init?.method ?? "GET").toUpperCase();
   if (url.endsWith("/widgets/search") && method === "POST") {
+    lastSearchBody = init?.body ? JSON.parse(String(init.body)) : undefined;
     return new Response(
       JSON.stringify({
         status: 200,
@@ -156,18 +162,24 @@ async function main() {
   const client = widgetsPlugin.getClient({ baseUrl: "https://api.example.org" });
 
   // Filter helpers (`f.eq`, `f.between`, `f.in`, ...) turn `{operator, value}`
-  // literals into readable call-site code. The route's filter schema (built
-  // from the plugin's filter spec) validates this bag before any HTTP traffic.
+  // literals into readable call-site code. The caller passes ONE flat bag;
+  // `search()` validates it and splits it into the wire shape before any HTTP
+  // traffic. `color`/`weight` are protocol defaults, `tags` is a registered
+  // custom, and `region` is an ad hoc custom that was never pre-registered.
   const result = await client.widgets.search({
     page: 1,
     filters: {
       color: f.eq("red"),
       weight: f.between(1, 100),
       tags: f.in(["new", "featured"]),
+      region: f.eq("us-east"),
     },
   });
 
-  console.log("─── Search returned", result.items.length, "row(s) ───");
+  console.log("─── Request body filters (categorized by search()) ───");
+  console.log(JSON.stringify((lastSearchBody as { filters?: unknown })?.filters, null, 2));
+
+  console.log("\n─── Search returned", result.items.length, "row(s) ───");
 
   // Per-row parse results. `ok: true` rows have `.data` typed against the
   // extended schema (custom fields appear as typed properties). `ok: false`

@@ -171,9 +171,11 @@ const plugin = definePlugin({
   routes: {
     widgets: {
       search: {
+        // `color`/`weight` are protocol DEFAULT filters (registered in the
+        // resource registry), so they are not declared here. `tags` is a
+        // genuine custom filter registered by the plugin.
         filters: {
-          color: { filterType: "stringComparison" },
-          weight: { filterType: "numberRange" },
+          tags: { filterType: "stringArray" },
         },
       },
     },
@@ -193,7 +195,7 @@ describe("definePlugin — client round-trip", () => {
     }
   });
 
-  it("(2) custom filters validate at call site (invalid operator rejected before fetch)", async () => {
+  it("(2) filters validate at call site (invalid operator rejected before fetch)", async () => {
     const client = plugin.getClient({ baseUrl: BASE_URL });
 
     await expect(
@@ -207,12 +209,34 @@ describe("definePlugin — client round-trip", () => {
 
     await client.widgets.search({
       page: 1,
-      filters: { color: f.eq("red"), weight: f.between(1, 10) },
+      filters: { color: f.eq("red"), weight: f.between(1, 10), tags: f.in(["a", "b"]) },
     });
     expect(lastSearchBody).toMatchObject({
       filters: {
+        // Protocol default filters stay at the top level...
         color: { operator: "eq", value: "red" },
         weight: { operator: "between", value: { min: 1, max: 10 } },
+        // ...registered custom filters nest under `customFilters`.
+        customFilters: {
+          tags: { operator: "in", value: ["a", "b"] },
+        },
+      },
+    });
+  });
+
+  it("(2b) ad hoc (unregistered) custom filters nest under customFilters", async () => {
+    const client = plugin.getClient({ baseUrl: BASE_URL });
+
+    await client.widgets.search({
+      page: 1,
+      // `region` was never registered as a custom filter; it is validated
+      // against the generic filter schema and still nests under customFilters.
+      filters: { color: f.eq("blue"), region: f.eq("us-east") },
+    });
+    expect(lastSearchBody).toMatchObject({
+      filters: {
+        color: { operator: "eq", value: "blue" },
+        customFilters: { region: { operator: "eq", value: "us-east" } },
       },
     });
   });

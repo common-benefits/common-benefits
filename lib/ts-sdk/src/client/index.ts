@@ -38,13 +38,15 @@ export type {
   SortedResultsInfo,
   PaginatedBodyParams,
 } from "./responses";
-export { Widgets, RESOURCE_SCHEMA_MAP } from "./resources";
+export { Widgets, RESOURCE_REGISTRY } from "./resources";
 export type {
-  WidgetsOptions,
+  ResourceOptions,
+  ResourceConstructor,
   ListOptions,
   SearchOptions,
   WidgetsListResult,
   WidgetsSearchResult,
   ResourceMethod,
   ResourceName,
+  ResourceRegistryEntry,
 } from "./resources";

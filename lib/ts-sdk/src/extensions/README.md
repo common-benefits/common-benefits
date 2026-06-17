@@ -20,8 +20,8 @@ The extensions surface in `@common-benefits/sdk` provides TypeScript utilities f
   - [What is a plugin?](#what-is-a-plugin)
   - [Defining a plugin](#defining-a-plugin)
   - [Publishing a plugin](#publishing-a-plugin)
-- [Adding custom filters to a route](#adding-custom-filters-to-a-route)
-  - [Declaring filters on a plugin](#declaring-filters-on-a-plugin)
+- [Filtering a search route](#filtering-a-search-route)
+  - [Registering custom filters on a plugin](#registering-custom-filters-on-a-plugin)
   - [The `f.*` filter helpers](#the-f-filter-helpers)
 - [Using plugins with the API client](#using-plugins-with-the-api-client)
 - [Plugin transformations](#plugin-transformations)
@@ -235,7 +235,7 @@ The returned `Plugin` object has four properties:
 - **`myPlugin.schemas`**: a record of per-model compiled output, one entry per extensible model. Each entry has:
   - `.commonSchema`: the Zod schema with typed `customFields` applied (use this to parse data).
   - `.sourceSchema`, `.toCommon`, `.fromCommon`: populated when transforms are configured (see [Plugin transformations](#plugin-transformations)).
-- **`myPlugin.routes`**: the route declarations you supplied (see [Adding custom filters to a route](#adding-custom-filters-to-a-route)).
+- **`myPlugin.routes`**: the route declarations you supplied (see [Filtering a search route](#filtering-a-search-route)).
 - **`myPlugin.getClient(config)`**: a factory that returns a `Client` with the plugin's typed resources already attached (see [Using plugins with the API client](#using-plugins-with-the-api-client)).
 
 ### Publishing a plugin
@@ -355,13 +355,32 @@ widget.customFields?.programArea?.value.code; // string
 widget.customFields?.cfda?.value; // string
 ```
 
-## Adding custom filters to a route
+## Filtering a search route
 
-Custom filters let a plugin declare the typed filters an API accepts on a search route. Each filter is validated before it hits the wire, and the resource's `search({ filters })` autocompletes the configured filter names.
+A search route accepts two kinds of filters:
 
-### Declaring filters on a plugin
+- **Default filters** are protocol-defined for the resource (for the `Widget` scaffold: `color` and `weight`). They are part of the spec, so you do not declare them; just pass them.
+- **Custom filters** are implementation-defined. You can **register** them on the plugin for typed, per-type validation, or pass them **ad hoc** without registering anything.
 
-Declare filters under `routes.<resource>.search.filters`, keyed by filter name. Each spec names a `filterType` from the supported set:
+The caller always passes a single flat `filters` bag to `search()`. The SDK categorizes it invisibly: keys that match the resource's default filters go to the top level of the request body's `filters`; every other key (registered or ad hoc) nests under `filters.customFilters`:
+
+```jsonc
+// search({ filters: { color: f.eq("red"), tags: f.in(["a"]), region: f.eq("us") } })
+// is sent as:
+{
+  "filters": {
+    "color": { "operator": "eq", "value": "red" }, // default → top level
+    "customFilters": {
+      "tags": { "operator": "in", "value": ["a"] }, // registered custom
+      "region": { "operator": "eq", "value": "us" }, // ad hoc custom
+    },
+  },
+}
+```
+
+### Registering custom filters on a plugin
+
+Register custom filters under `routes.<resource>.search.filters`, keyed by filter name. Each spec names a `filterType` from the supported set. Registered filters get typed validation and autocomplete on `search({ filters })`:
 
 ```typescript
 import { definePlugin } from "@common-benefits/sdk";
@@ -371,9 +390,8 @@ const plugin = definePlugin({
   routes: {
     widgets: {
       search: {
+        // `color`/`weight` are defaults, so they are not declared here.
         filters: {
-          color: { filterType: "stringComparison" },
-          weight: { filterType: "numberRange" },
           tags: { filterType: "stringArray" },
         },
       },
@@ -382,7 +400,11 @@ const plugin = definePlugin({
 } as const);
 ```
 
-Supported `filterType` values: `stringComparison`, `stringArray`, `numberComparison`, `numberArray`, `numberRange`, `dateComparison`, `dateRange`, `moneyComparison`, `moneyRange`. Each maps to a per-type Zod schema in [`CUSTOM_FILTER_SCHEMA_MAP`](./filter-type-map.ts), which `buildGetClient()` uses to validate the `filters` bag on `search()`.
+Supported `filterType` values: `stringComparison`, `stringArray`, `numberComparison`, `numberArray`, `numberRange`, `dateComparison`, `dateRange`, `moneyComparison`, `moneyRange`. Each maps to a per-type Zod schema in [`CUSTOM_FILTER_SCHEMA_MAP`](./filter-type-map.ts).
+
+Registering is optional. An unregistered key passed to `search({ filters })` is treated as an ad hoc custom filter, validated against the generic `{ operator, value }` schema, and nested under `customFilters` all the same. Validation per bucket: default keys against the protocol default-filters schema, registered keys against their declared type, ad hoc keys against the generic schema. Invalid filters throw before any request is sent.
+
+> A typo'd default key (e.g. `wieght`) is not a compile error: because ad hoc keys are allowed, it silently falls through to `customFilters` and is validated only against the generic schema. This is the cost of keeping the split invisible behind one flat bag.
 
 ### The `f.*` filter helpers
 
@@ -400,7 +422,7 @@ Available helpers: `eq`, `neq`, `lt`, `lte`, `gt`, `gte`, `in`, `notIn`, `like`,
 
 ## Using plugins with the API client
 
-`plugin.getClient(config)` returns a `Client` whose resources are already wired to the plugin's typed schemas and filters. There is no per-call `schema:` passthrough to remember: items parse against the extended `commonSchema` by default, and `search({ filters })` validates against the declared filters automatically.
+`plugin.getClient(config)` returns a `Client` whose resources are already wired to the plugin's typed schemas and filters. The resource construction is registry-driven, so a `Client` exposes every registered resource named in `routes`; there is no per-call `schema:` passthrough to remember. Items parse against the extended `commonSchema` by default, and `search({ filters })` categorizes and validates filters automatically.
 
 ```typescript
 import { Auth, definePlugin, f } from "@common-benefits/sdk";
@@ -418,9 +440,9 @@ const plugin = definePlugin({
   routes: {
     widgets: {
       search: {
+        // `color`/`weight` are default filters; `tags` is a registered custom.
         filters: {
-          color: { filterType: "stringComparison" },
-          weight: { filterType: "numberRange" },
+          tags: { filterType: "stringArray" },
         },
       },
     },
@@ -437,12 +459,16 @@ const widget = await client.widgets.get(widgetId);
 widget.customFields?.legacyId?.value; // typed as number
 widget.customFields?.category?.value; // typed as string
 
-// Search with typed, validated filters
+// Search with a single flat filter bag: defaults, a registered custom, and an
+// ad hoc custom. search() splits them into the wire shape (see "Filtering a
+// search route").
 const results = await client.widgets.search({
   query: "blue",
   filters: {
-    color: f.eq("blue"),
-    weight: f.between(1, 100),
+    color: f.eq("blue"), // default → top-level filters.color
+    weight: f.between(1, 100), // default → top-level filters.weight
+    tags: f.in(["featured"]), // registered custom → filters.customFilters.tags
+    region: f.eq("us-east"), // ad hoc custom → filters.customFilters.region
   },
 });
 ```
@@ -651,16 +677,16 @@ The tables below list the extension-related exports from `@common-benefits/sdk`,
 
 ### Schema and filter utilities
 
-| Export                                                 | Kind     | Description                                                                                                                              | Demonstrated in                                                            |
-| ------------------------------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| [`withCustomFields()`](./with-custom-fields.ts)        | function | Extends a single Zod object schema with typed custom fields. Unregistered fields pass through but are typed as the base `CustomField`.   | [Ad hoc with `withCustomFields()`](#option-1-ad-hoc-with-withcustomfields) |
-| [`WithCustomFieldsResult`](./with-custom-fields.ts)    | type     | The return type of `withCustomFields()`: a Zod object schema where `customFields` is replaced with a typed version.                      |                                                                            |
-| [`withCustomFilters()`](./with-custom-filters.ts)      | function | Builds a Zod schema for a route's filter bag from a `Record<string, CustomFilterSpec>`. Used by `buildGetClient()` to validate `search`. | [Adding custom filters to a route](#adding-custom-filters-to-a-route)      |
-| [`WithCustomFiltersResult`](./with-custom-filters.ts)  | type     | The return type of `withCustomFilters()`.                                                                                                |                                                                            |
-| [`f`](./filter-helpers.ts)                             | const    | Ergonomic builders for `{ operator, value }` filter literals (`f.eq`, `f.between`, `f.in`, ...).                                         | [The `f.*` filter helpers](#the-f-filter-helpers)                          |
-| [`CUSTOM_FILTER_SCHEMA_MAP`](./filter-type-map.ts)     | const    | Maps each `CustomFilterType` to its per-type Zod filter schema.                                                                          | [Declaring filters on a plugin](#declaring-filters-on-a-plugin)            |
-| [`getCustomFieldValue()`](./get-custom-field-value.ts) | function | Safely extracts and parses a custom field value from an `ExtensibleObject`. Returns the parsed value, `undefined` if missing, or throws. | [Extracting custom field values](#extracting-custom-field-values)          |
-| [`EXTENSIBLE_SCHEMA_MAP`](./plugin-types.ts)           | const    | Maps each extensible model name to its base Zod schema. Currently `Widget` and `Gadget` (scaffolding placeholders).                      | [Key concepts](#key-concepts)                                              |
+| Export                                                 | Kind     | Description                                                                                                                              | Demonstrated in                                                                   |
+| ------------------------------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| [`withCustomFields()`](./with-custom-fields.ts)        | function | Extends a single Zod object schema with typed custom fields. Unregistered fields pass through but are typed as the base `CustomField`.   | [Ad hoc with `withCustomFields()`](#option-1-ad-hoc-with-withcustomfields)        |
+| [`WithCustomFieldsResult`](./with-custom-fields.ts)    | type     | The return type of `withCustomFields()`: a Zod object schema where `customFields` is replaced with a typed version.                      |                                                                                   |
+| [`withCustomFilters()`](./with-custom-filters.ts)      | function | Builds a Zod schema for a route's filter bag from a `Record<string, CustomFilterSpec>`. Used by `buildGetClient()` to validate `search`. | [Filtering a search route](#filtering-a-search-route)                             |
+| [`WithCustomFiltersResult`](./with-custom-filters.ts)  | type     | The return type of `withCustomFilters()`.                                                                                                |                                                                                   |
+| [`f`](./filter-helpers.ts)                             | const    | Ergonomic builders for `{ operator, value }` filter literals (`f.eq`, `f.between`, `f.in`, ...).                                         | [The `f.*` filter helpers](#the-f-filter-helpers)                                 |
+| [`CUSTOM_FILTER_SCHEMA_MAP`](./filter-type-map.ts)     | const    | Maps each `CustomFilterType` to its per-type Zod filter schema.                                                                          | [Registering custom filters on a plugin](#registering-custom-filters-on-a-plugin) |
+| [`getCustomFieldValue()`](./get-custom-field-value.ts) | function | Safely extracts and parses a custom field value from an `ExtensibleObject`. Returns the parsed value, `undefined` if missing, or throws. | [Extracting custom field values](#extracting-custom-field-values)                 |
+| [`EXTENSIBLE_SCHEMA_MAP`](./plugin-types.ts)           | const    | Maps each extensible model name to its base Zod schema. Currently `Widget` and `Gadget` (scaffolding placeholders).                      | [Key concepts](#key-concepts)                                                     |
 
 ### Transforms
 
@@ -680,13 +706,13 @@ The tables below list the extension-related exports from `@common-benefits/sdk`,
 
 ### Shared types
 
-| Export                                      | Kind      | Description                                                                                                                          | Demonstrated in                                                 |
-| ------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
-| [`CustomFieldSpec`](./plugin-types.ts)      | interface | Describes a single custom field: its `fieldType`, optional `value`, and optional `name`/`description`.                               | [Key concepts](#key-concepts)                                   |
-| [`CustomFilterSpec`](./plugin-types.ts)     | interface | Describes a single custom filter: its `filterType`, and optional `name`/`description`.                                               | [Key concepts](#key-concepts)                                   |
-| [`CustomFilterType`](./plugin-types.ts)     | type      | The set of filter families adopters can attach to a search route (e.g. `stringComparison`, `numberRange`).                           | [Declaring filters on a plugin](#declaring-filters-on-a-plugin) |
-| [`PluginRoutes`](./plugin-types.ts)         | type      | The shape of `definePlugin`'s `routes` input: per-resource method declarations (currently `search.filters`).                         | [Declaring filters on a plugin](#declaring-filters-on-a-plugin) |
-| [`SchemaInput`](./plugin-types.ts)          | type      | Author-provided input per model: `customFields` alone, or with a `sourceSchema` plus either `mappings` or `toCommon` / `fromCommon`. | [Plugin transformations](#plugin-transformations)               |
-| [`ExtensibleSchemaName`](./plugin-types.ts) | type      | Union of model names that support extensions. Currently `"Widget" \| "Gadget"`.                                                      |                                                                 |
-| [`HasCustomFields`](./plugin-types.ts)      | type      | A Zod object schema whose shape includes a `customFields` property. Constrains `withCustomFields()` inputs at compile time.          |                                                                 |
-| [`ExtensibleObject`](./plugin-types.ts)     | interface | An object with an optional `customFields` property. Constrains `getCustomFieldValue()` inputs at compile time.                       |                                                                 |
+| Export                                      | Kind      | Description                                                                                                                          | Demonstrated in                                                                   |
+| ------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| [`CustomFieldSpec`](./plugin-types.ts)      | interface | Describes a single custom field: its `fieldType`, optional `value`, and optional `name`/`description`.                               | [Key concepts](#key-concepts)                                                     |
+| [`CustomFilterSpec`](./plugin-types.ts)     | interface | Describes a single custom filter: its `filterType`, and optional `name`/`description`.                                               | [Key concepts](#key-concepts)                                                     |
+| [`CustomFilterType`](./plugin-types.ts)     | type      | The set of filter families adopters can attach to a search route (e.g. `stringComparison`, `numberRange`).                           | [Registering custom filters on a plugin](#registering-custom-filters-on-a-plugin) |
+| [`PluginRoutes`](./plugin-types.ts)         | type      | The shape of `definePlugin`'s `routes` input: per-resource method declarations (currently `search.filters`).                         | [Registering custom filters on a plugin](#registering-custom-filters-on-a-plugin) |
+| [`SchemaInput`](./plugin-types.ts)          | type      | Author-provided input per model: `customFields` alone, or with a `sourceSchema` plus either `mappings` or `toCommon` / `fromCommon`. | [Plugin transformations](#plugin-transformations)                                 |
+| [`ExtensibleSchemaName`](./plugin-types.ts) | type      | Union of model names that support extensions. Currently `"Widget" \| "Gadget"`.                                                      |                                                                                   |
+| [`HasCustomFields`](./plugin-types.ts)      | type      | A Zod object schema whose shape includes a `customFields` property. Constrains `withCustomFields()` inputs at compile time.          |                                                                                   |
+| [`ExtensibleObject`](./plugin-types.ts)     | interface | An object with an optional `customFields` property. Constrains `getCustomFieldValue()` inputs at compile time.                       |                                                                                   |

@@ -12,6 +12,7 @@
 
 import { z } from "zod";
 import { CustomFieldSchema } from "./fields";
+import { NumberRangeFilterSchema, StringComparisonFilterSchema } from "./filters";
 
 export const WidgetBaseSchema = z.object({
   /** Unique identifier for the widget */
@@ -28,4 +29,21 @@ export const WidgetBaseSchema = z.object({
 
   /** Adopter-defined custom fields, keyed by field name */
   customFields: z.record(z.string(), CustomFieldSchema).nullish(),
+});
+
+/**
+ * Protocol-defined ("standard") search filters for the widgets route.
+ *
+ * Stands in for the real `Program` default filters until the TypeSpec
+ * `GET /programs/search` route is emitted (mirrors the upstream CommonGrants
+ * `OppDefaultFiltersSchema`). Every member is optional: a search request
+ * supplies any subset. `search()` routes the keys named here to the top level
+ * of the request body's `filters`; everything else nests under `customFilters`.
+ */
+export const WidgetDefaultFiltersSchema = z.object({
+  /** Filter by widget color */
+  color: StringComparisonFilterSchema.nullish(),
+
+  /** Filter by widget weight range */
+  weight: NumberRangeFilterSchema.nullish(),
 });
