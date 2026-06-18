@@ -9,7 +9,7 @@ import { z } from "zod";
 import type { CommonBenefitsClient } from "../../client/facade";
 import { GadgetBaseSchema, GadgetDefaultFiltersSchema } from "../../schemas/gadget";
 import { WidgetBaseSchema, WidgetDefaultFiltersSchema } from "../../schemas/widget";
-import { EXTENSIBLE_SCHEMA_MAP } from "../schemas/helpers";
+import { EXTENSIBLE_SCHEMA_MAP } from "../registry";
 import type {
   CustomFieldSpec,
   SchemaExtensions,

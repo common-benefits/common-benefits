@@ -18,7 +18,7 @@ import type { ResourceConstructor, ResourceMethod } from "../../client/resources
 import { DEFAULT_FILTERS_MAP, RESOURCE_REGISTRY } from "../../client/resources/registry";
 import { withCustomFilters } from "../routes";
 import type { PluginRoutes } from "../routes";
-import { EXTENSIBLE_SCHEMA_MAP } from "../schemas/helpers";
+import { EXTENSIBLE_SCHEMA_MAP } from "../registry";
 import {
   withCustomFields,
   type SchemaExtensions,

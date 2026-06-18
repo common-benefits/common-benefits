@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { EXTENSIBLE_SCHEMA_MAP } from "../schemas/helpers";
+import { EXTENSIBLE_SCHEMA_MAP } from "../registry";
 import type { CustomFieldSpec, SchemaWithCustomFields } from "../schemas";
 import type { ExtensibleSchemaName } from "../schemas/types";
 

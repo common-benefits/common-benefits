@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { buildTransforms } from "../../src/extensions/transforms/builder";
+import { buildTransforms } from "../../src/extensions/transforms";
 import { TransformError } from "../../src/extensions/transforms";
 import { getFromPath, type Handler } from "../../src/utils/transformation";
 

@@ -46,6 +46,7 @@ export {
   withCustomFields,
   withCustomFilters,
   getCustomFieldValue,
+  buildTransforms,
   TransformError,
   f,
 } from "./extensions";
@@ -61,6 +62,8 @@ export type {
   FromCommon,
   ToCommon,
   TransformTypes,
+  BuildTransformsOptions,
+  RawTransforms,
   WithCustomFiltersResult,
   CustomFieldSpec,
   CustomFilterSpec,

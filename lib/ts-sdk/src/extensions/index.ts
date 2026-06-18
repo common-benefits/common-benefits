@@ -9,7 +9,7 @@
  * - `schemas/`    — `withCustomFields`, `SchemaWithTransforms` / `SchemaOnly`,
  *                   `getCustomFieldValue` (internal: `EXTENSIBLE_SCHEMA_MAP`, `HasCustomFields`)
  * - `routes/`     — `withCustomFilters`, `f` (internal: `CUSTOM_FILTER_SCHEMA_MAP`, the projection types)
- * - `transforms/` — `TransformError`, author helper types (internal: `buildTransforms`)
+ * - `transforms/` — `TransformError`, `buildTransforms`, author helper types
  */
 
 // plugin
@@ -42,5 +42,13 @@ export type {
 } from "./routes";
 
 // transforms
-export { TransformError } from "./transforms";
-export type { TransformResult, TransformTypes, CommonOf, ToCommon, FromCommon } from "./transforms";
+export { TransformError, buildTransforms } from "./transforms";
+export type {
+  TransformResult,
+  TransformTypes,
+  CommonOf,
+  ToCommon,
+  FromCommon,
+  BuildTransformsOptions,
+  RawTransforms,
+} from "./transforms";
