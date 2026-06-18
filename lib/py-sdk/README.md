@@ -25,6 +25,11 @@ It has three layers:
 ```sh
 make install      # poetry install
 make test         # pytest
-make check-types  # mypy
-make checks       # format + lint + mypy + pyright + tests
+make check-types  # pyright
+make checks       # format + lint + pyright + tests
 ```
+
+Type checking uses [pyright](https://microsoft.github.io/pyright/) (the same engine behind
+Pylance in VS Code), so the CLI matches the editor. It handles the SDK's generics (PEP 695/696
+defaults, overload resolution, pydantic `populate_by_name` aliases) where mypy and the newer
+pyrefly currently fall short.

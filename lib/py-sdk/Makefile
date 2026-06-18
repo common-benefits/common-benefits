@@ -1,5 +1,5 @@
 RUNTIME_PREFIX := poetry run
-.PHONY: install format lint test check-format check-lint check-types check-types-pyright checks
+.PHONY: install format lint test check-format check-lint check-types checks
 
 install:
 	poetry install
@@ -20,9 +20,6 @@ check-lint:
 	$(RUNTIME_PREFIX) ruff check .
 
 check-types:
-	$(RUNTIME_PREFIX) mypy .
-
-check-types-pyright:
 	$(RUNTIME_PREFIX) pyright
 
-checks: check-format check-lint check-types check-types-pyright test
+checks: check-format check-lint check-types test
