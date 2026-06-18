@@ -16,8 +16,8 @@
 
 import { describe, expectTypeOf, it } from "vitest";
 import { z } from "zod";
-import { definePlugin } from "../../src/extensions/define-plugin";
-import { f } from "../../src/extensions/filter-helpers";
+import { definePlugin } from "../../src/extensions/plugin";
+import { f } from "../../src/extensions/routes";
 import type { Gadgets } from "../../src/client/resources/gadgets";
 import type { Widgets } from "../../src/client/resources/widgets";
 

@@ -68,7 +68,7 @@ export type {
   FromCommon,
   ToCommon,
   TransformTypes,
-  WithCustomFieldsResult,
+  SchemaWithCustomFields,
   WithCustomFiltersResult,
   CustomFieldSpec,
   CustomFieldType,

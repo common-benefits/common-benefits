@@ -9,8 +9,8 @@
 
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { buildTransforms } from "../../src/extensions/build-transforms";
-import { TransformError } from "../../src/extensions/transform-types";
+import { buildTransforms } from "../../src/extensions/transforms";
+import { TransformError } from "../../src/extensions/transforms";
 import { getFromPath, type Handler } from "../../src/utils/transformation";
 
 describe("buildTransforms — compilation", () => {

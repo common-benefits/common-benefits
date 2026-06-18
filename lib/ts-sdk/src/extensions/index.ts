@@ -1,64 +1,71 @@
 /**
  * Extensions module entry point.
  *
- * Public API:
- * - `definePlugin()` / `Plugin`
- * - `buildGetClient()` / `BuiltClient`
- * - `withCustomFields()` / `withCustomFilters()`
- * - `getCustomFieldValue()`
- * - `f` filter helpers
+ * Organized by concern (mirroring the Python SDK's extension modules), each
+ * concern splitting exported API (`index`) from type machinery (`types`) and
+ * runtime construction (`builder`):
+ * - `plugin/`     — `definePlugin`, `Plugin`, `getClient` / `buildGetClient`
+ * - `schemas/`    — `withCustomFields`, `SchemaWithTransforms` / `SchemaOnly`,
+ *                   `EXTENSIBLE_SCHEMA_MAP`, `getCustomFieldValue`
+ * - `routes/`     — `withCustomFilters`, `f`, the filter map + registration types
+ * - `transforms/` — `buildTransforms`, `TransformError`, author helper types
+ * - `specs.ts`    — `CustomFieldSpec` / `CustomFilterSpec`
+ * - `types.ts`    — shared vocabulary (`ExtensibleSchemaName`, field/filter tags)
  */
 
-export { definePlugin } from "./define-plugin";
+// plugin
+export { definePlugin, buildGetClient } from "./plugin";
 export type {
-  DefinePluginOptions,
   Plugin,
   PluginMeta,
+  DefinePluginOptions,
   ResolvedPluginSchemas,
-  SchemaOnly,
-  SchemaWithTransforms,
-} from "./define-plugin";
+  BuildGetClientOptions,
+  BuiltClient,
+} from "./plugin";
 
-// Transform layer
-export { TransformError } from "./transform-types";
-export type { TransformResult } from "./transform-types";
-export type { CommonOf, FromCommon, ToCommon, TransformTypes } from "./transform-helpers";
-// `buildTransforms` is `@internal` — exported for tests only, not part of the
-// public README surface.
-export { buildTransforms } from "./build-transforms";
-export type { BuildTransformsOptions, RawTransforms } from "./build-transforms";
-
-export { buildGetClient } from "./build-get-client";
-export type { BuildGetClientOptions, BuiltClient } from "./build-get-client";
-
-export { withCustomFields } from "./with-custom-fields";
-export type { WithCustomFieldsResult } from "./with-custom-fields";
-
-export { withCustomFilters } from "./with-custom-filters";
-export type { WithCustomFiltersResult } from "./with-custom-filters";
-
-export { getCustomFieldValue } from "./get-custom-field-value";
-
-export { f } from "./filter-helpers";
-
-export { CUSTOM_FILTER_SCHEMA_MAP, type CustomFilterSchema } from "./filter-type-map";
-
-export { EXTENSIBLE_SCHEMA_MAP } from "./plugin-types";
+// schemas
+export { withCustomFields, getCustomFieldValue, EXTENSIBLE_SCHEMA_MAP } from "./schemas";
 export type {
-  CustomFieldSpec,
-  CustomFieldType,
-  CustomFilterSpec,
-  CustomFilterType,
-  ExtensibleObject,
-  ExtensibleSchemaName,
-  FunctionsSchemaInput,
+  SchemaWithTransforms,
+  SchemaOnly,
+  SchemaWithCustomFields,
   HasCustomFields,
-  MappingsSchemaInput,
-  PluginRoutes,
-  RouteMethodSpec,
-  RouteMethods,
   SchemaExtensions,
   SchemaInput,
   SchemaMappings,
+  MappingsSchemaInput,
+  FunctionsSchemaInput,
   SchemaOnlyInput,
-} from "./plugin-types";
+} from "./schemas";
+
+// routes
+export { withCustomFilters, f, CUSTOM_FILTER_SCHEMA_MAP } from "./routes";
+export type {
+  WithCustomFiltersResult,
+  CustomFilterSchema,
+  PluginRoutes,
+  RouteMethods,
+  RouteMethodSpec,
+} from "./routes";
+
+// transforms
+export { TransformError, buildTransforms } from "./transforms";
+export type {
+  TransformResult,
+  TransformTypes,
+  CommonOf,
+  ToCommon,
+  FromCommon,
+  BuildTransformsOptions,
+  RawTransforms,
+} from "./transforms";
+
+// specs + shared types
+export type { CustomFieldSpec, CustomFilterSpec } from "./specs";
+export type {
+  CustomFieldType,
+  CustomFilterType,
+  ExtensibleObject,
+  ExtensibleSchemaName,
+} from "./types";

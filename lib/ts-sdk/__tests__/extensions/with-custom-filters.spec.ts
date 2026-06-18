@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { withCustomFilters } from "../../src/extensions/with-custom-filters";
+import { withCustomFilters } from "../../src/extensions/routes";
 
 describe("withCustomFilters", () => {
   it("builds a Zod schema for each declared filter, made optional", () => {

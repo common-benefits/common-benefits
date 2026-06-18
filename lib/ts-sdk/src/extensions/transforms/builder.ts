@@ -2,49 +2,32 @@
  * `buildTransforms()` — compile a pair of declarative mapping objects into raw
  * `(toCommon, fromCommon)` callables.
  *
- * This is an **`@internal`** helper that `definePlugin()` calls for the mappings
- * authoring path. It is NOT the public author surface and does not return a
- * bundle the author spreads into `definePlugin`. It is exported only so tests
- * can drive it directly.
- *
- * Responsibility: compile mappings into raw transform functions (value +
- * handler-level errors) and validate the mapping structure at build time.
- * Runtime output validation (`safeParse` against `commonSchema` / `sourceSchema`)
- * is NOT done here — `definePlugin` wraps both authoring paths in a single
- * validation step so they behave identically.
- *
- * Each direction is author-provided — this utility never inverts one into the
- * other, because many-to-one handlers like `match` are not reversible.
+ * `@internal` helper `definePlugin()` calls for the mappings authoring path. It
+ * compiles mappings into raw transform functions (value + handler-level errors)
+ * and validates the mapping structure at build time. Runtime output validation
+ * (`safeParse` against the schemas) is layered on by `definePlugin` so both
+ * authoring paths behave identically. Exported only so tests can drive it.
  */
 
 import { z } from "zod";
-
 import {
   DEFAULT_HANDLERS,
   HandlerError,
   transformWithMapping,
   type Handler,
-} from "../utils/transformation";
-import { TransformError, type TransformResult } from "./transform-types";
+} from "../../utils/transformation";
+import { TransformError, type TransformResult } from "./types";
 
 // ############################################################################
 // Internal - mapping structure validation
 // ############################################################################
 
 /**
- * Walk the mapping tree and throw on structural malformation.
- *
- * Each node must be a primitive (`string` / `number` / `boolean` / `null` /
- * `undefined`) or a plain object. Arrays and class instances are rejected.
- *
- * Handler arguments are runtime-only and skipped — they may legitimately be
- * arrays, deeply nested specs, or anything else the handler accepts.
- *
- * Sibling keys at a handler-dispatch node are rejected here. The runtime walker
- * is first-key-wins, so `{ field: "x", const: "fallback" }` would silently drop
- * `const` — almost always an author typo — so fail loud at build time instead.
- * The low-level `transformWithMapping` walker stays lenient so programmatic
- * callers composing partial mappings aren't forced into the strict shape.
+ * Walk the mapping tree and throw on structural malformation. Each node must be
+ * a primitive or a plain object; arrays and class instances are rejected.
+ * Handler arguments are runtime-only and skipped. Sibling keys at a
+ * handler-dispatch node are rejected (the runtime walker is first-key-wins, so
+ * `{ field: "x", const: "fallback" }` would silently drop `const`).
  *
  * @internal
  */
@@ -61,8 +44,6 @@ function validateMapping(mapping: unknown, knownHandlers: Set<string>, path = ""
     );
   }
 
-  // A handler invocation must be the sole key in its node — see the function
-  // docstring above for the first-key-wins rationale.
   const nodeKeys = Object.keys(mapping as Record<string, unknown>);
   const handlerKeys = nodeKeys.filter((k) => knownHandlers.has(k));
   if (handlerKeys.length > 0 && nodeKeys.length > 1) {
@@ -77,25 +58,15 @@ function validateMapping(mapping: unknown, knownHandlers: Set<string>, path = ""
 
   for (const [key, value] of Object.entries(mapping as Record<string, unknown>)) {
     const childPath = path === "" ? key : `${path}.${key}`;
-    if (knownHandlers.has(key)) {
-      // Handler invocation — argument is runtime-only, do not recurse.
-      continue;
-    }
+    if (knownHandlers.has(key)) continue;
     validateMapping(value, knownHandlers, childPath);
   }
 }
 
 /**
  * Validate that every top-level output key in `mapping` that is not a known
- * handler name is a real field on `schema`.
- *
- * Only runs when `schema` is an instance of `z.ZodObject` — when it is not
- * (e.g. `ZodRecord`, `ZodUnion`), returns without error. In practice all
- * schemas produced by `withCustomFields()` and the base schemas are
- * `ZodObject`s, so the fallback is a safety net, not an expected code path.
- *
- * Run for BOTH directions when the corresponding schema is supplied (the
- * CommonGrants SDK validated only the common side).
+ * handler name is a real field on `schema`. Only runs for `z.ZodObject` schemas
+ * (all schemas from `withCustomFields()` and the base schemas qualify).
  *
  * @internal
  */
@@ -131,8 +102,7 @@ export interface BuildTransformsOptions {
   };
   /**
    * Custom handlers registered for this call only. Name collisions with
-   * {@link DEFAULT_HANDLERS} raise a `TypeError` at build time rather than
-   * silently shadowing the default.
+   * {@link DEFAULT_HANDLERS} raise a `TypeError` at build time.
    */
   handlers?: Map<string, Handler>;
   /** Optional source schema — used only for build-time output-path validation of `fromCommon`. */
@@ -153,15 +123,9 @@ export interface RawTransforms {
  * Compile a pair of declarative mapping objects into raw `(toCommon, fromCommon)`
  * callables.
  *
- * @remarks
- * The returned functions report handler-level failures only — runtime output
- * validation is layered on by `definePlugin`. Handler failures short-circuit
- * the mapping walk on the first failure, so `errors` carries exactly one
- * `TransformError` even when several fields would have failed.
- *
  * @throws TypeError when custom handler names collide with built-in defaults.
- * @throws Error when either mapping is structurally malformed (sibling keys on
- *   a handler-dispatch node) or maps to an unknown top-level output field.
+ * @throws Error when either mapping is structurally malformed or maps to an
+ *   unknown top-level output field.
  *
  * @internal
  */
@@ -180,8 +144,6 @@ export function buildTransforms(options: BuildTransformsOptions): RawTransforms 
   const merged = new Map([...DEFAULT_HANDLERS, ...(handlers ?? [])]);
   const known = new Set(merged.keys());
 
-  // Validate mapping structure up front so malformed mappings fail at build
-  // time, not on first invocation.
   validateMapping(mappings.toCommon, known);
   validateMapping(mappings.fromCommon, known);
   if (commonSchema !== undefined) {

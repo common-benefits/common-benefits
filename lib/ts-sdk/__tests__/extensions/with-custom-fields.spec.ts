@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { WidgetBaseSchema } from "../../src/schemas/widget";
-import { withCustomFields } from "../../src/extensions/with-custom-fields";
+import { withCustomFields } from "../../src/extensions/schemas";
 
 describe("withCustomFields", () => {
   it("returns a schema that parses custom fields with their typed value", () => {

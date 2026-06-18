@@ -17,7 +17,7 @@
  */
 
 import type { z } from "zod";
-import type { ExtensibleSchemaName } from "../../extensions/plugin-types";
+import type { ExtensibleSchemaName } from "../../extensions/types";
 import { WidgetDefaultFiltersSchema } from "../../schemas/widget";
 import { GadgetDefaultFiltersSchema } from "../../schemas/gadget";
 import type { ResourceConstructor, ResourceMethod } from "./base";

@@ -18,9 +18,9 @@
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { z } from "zod";
-import { definePlugin } from "../../src/extensions/define-plugin";
-import { f } from "../../src/extensions/filter-helpers";
-import type { FromCommon, ToCommon } from "../../src/extensions/transform-helpers";
+import { definePlugin } from "../../src/extensions/plugin";
+import { f } from "../../src/extensions/routes";
+import type { FromCommon, ToCommon } from "../../src/extensions/transforms";
 import { http, HttpResponse, setupServer } from "../utils/mock-fetch";
 
 const BASE_URL = "https://api.example.org";

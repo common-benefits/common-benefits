@@ -3,7 +3,7 @@
  *
  * This module is the pure, Zod-free core: `transformWithMapping()` walks a
  * declarative mapping spec and produces a transformed object. It is used by the
- * `@internal buildTransforms()` in `../extensions/build-transforms`, but can
+ * `@internal buildTransforms()` in `../extensions/transforms`, but can
  * also be imported on its own.
  *
  * Ported from the CommonGrants SDK (`lib/ts-sdk/src/extensions/transformation.ts`),

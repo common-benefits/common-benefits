@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { f } from "../../src/extensions/filter-helpers";
+import { f } from "../../src/extensions/routes";
 import {
   NumberRangeFilterSchema,
   StringArrayFilterSchema,
