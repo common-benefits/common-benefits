@@ -15,7 +15,6 @@ step**.
   - [Quick start](#quick-start)
   - [Kitchen sink example](#kitchen-sink-example)
 - [Modules](#modules)
-- [Design notes](#design-notes)
 - [Development](#development)
 
 ## Installation
@@ -116,34 +115,13 @@ for err in result.parse_errors:
 
 The SDK is organized into modules under `common_benefits_sdk/`:
 
-| Module                                          | Import path                          | Description                                          |
-| ----------------------------------------------- | ------------------------------------ | ---------------------------------------------------- |
-| [Extensions](./src/common_benefits_sdk/extensions/README.md) | `common_benefits_sdk.extensions` | Custom fields, transforms, plugins, route filters    |
-| [Client](./src/common_benefits_sdk/client/README.md)         | `common_benefits_sdk.client`     | Typed HTTP client with per-row parse results         |
-| [Schemas](./src/common_benefits_sdk/schemas/README.md)       | `common_benefits_sdk.schemas`    | Pydantic models, custom fields, and filter helpers   |
+| Module                                                       | Import path                      | Description                                        |
+| ------------------------------------------------------------ | -------------------------------- | -------------------------------------------------- |
+| [Extensions](./src/common_benefits_sdk/extensions/README.md) | `common_benefits_sdk.extensions` | Custom fields, transforms, plugins, route filters  |
+| [Client](./src/common_benefits_sdk/client/README.md)         | `common_benefits_sdk.client`     | Typed HTTP client with per-row parse results       |
+| [Schemas](./src/common_benefits_sdk/schemas/README.md)       | `common_benefits_sdk.schemas`    | Pydantic models, custom fields, and filter helpers |
 
 Runnable examples live in [`examples/`](./examples/README.md).
-
-## Design notes
-
-This SDK answers an open question: does an inheritance + generics extension model support the
-TS SDK's typed client and custom filters in Python, with full typing and no codegen? Findings:
-
-- **Yes, with full typing.** `plugin.get_client(...).widgets.search(filters=...)` returns rows
-  typed as the plugin's common model (custom fields included) and accepts the registered
-  filter keys, with no call-site type arguments. `pyright` verifies this end to end.
-- **The mechanism** is frozen, covariant dataclass carriers (`PluginSchemas`, `Routes`,
-  `Plugin`) whose type parameters `get_client` recovers via a single `self` annotation. A
-  TS "mapped type over routes" has no Python equivalent, so the resource/route slots are a
-  small fixed set hand-maintained in the SDK (the cost of no codegen falls on maintainers, not
-  authors or consumers).
-- **Where it diverges from TS.** Filter route registration is *static-only* (a phantom
-  `RouteFilters[TypedDict]` carrier): registered keys are typed at the call site, but at
-  runtime they validate against the generic filter shape rather than introspecting the
-  TypedDict (which hits Python's `type[TypedDict]` limitations). The static layer guarantees
-  call-site correctness; runtime validation is the backstop. Filter values conform to
-  `{operator, value}` (never `Any`), and unknown keys pass through to `customFilters`, so a
-  consumer can send custom filters with no plugin at all.
 
 ## Development
 

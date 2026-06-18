@@ -2,14 +2,15 @@
 
 This base intentionally exposes no public verbs. Each concrete resource (``Widgets``,
 ``Gadgets``, and real resources such as ``Applications`` / ``Organizations``) declares its
-own public API (``get`` / ``list`` / ``search`` plus resource-specific verbs like
-``submit`` or ``history``) by delegating to the ``_get`` / ``_list`` / ``_search`` helpers
-here. HTTP requests and pagination live on :class:`BaseClient`.
+own public API (``get`` / ``list`` / ``search`` plus resource-specific filterable verbs like
+``history`` or ``submit``) by delegating to the ``_get`` / ``_list`` / ``_filtered_request``
+helpers here. HTTP requests and pagination live on :class:`BaseClient`.
 
-``_search`` categorizes the flat ``filters`` bag the way the TS SDK does: keys matching the
-resource's standard (protocol) filters go to the top level; registered custom keys and ad
-hoc keys alike validate and nest under ``customFilters``. So custom filters pass through
-even with no plugin; invalid filter values raise :class:`FilterError` before the request.
+``_filtered_request`` categorizes a flat ``filters`` bag the way the TS SDK does: keys
+matching the method's standard (protocol) filters go to the top level; registered and ad hoc
+keys validate and nest under ``customFilters``. So custom filters pass through even with no
+plugin; invalid filter values raise :class:`FilterError` before the request. ``search`` is
+just the most common filterable verb built on this helper; ``Gadgets.history`` shows a second.
 """
 
 from __future__ import annotations
@@ -34,7 +35,7 @@ FilterSpecMap = dict[str, type[CommonBenefitsBaseModel]]
 class Resource(Generic[TItem]):
     """Base for a typed API resource bound to one common-model item type."""
 
-    #: Protocol-defined ("standard") filters for this resource; keys route to top level.
+    #: Protocol-defined ("standard") filters for the search route; keys route to top level.
     _standard_filters: ClassVar[FilterSpecMap] = {}
 
     def __init__(
@@ -75,18 +76,40 @@ class Resource(Generic[TItem]):
         page: Optional[int] = None,
         page_size: Optional[int] = None,
     ) -> SearchResult[TItem]:
-        """Search items, per-row parsed (POSTed to ``{path}/search``)."""
-        body: dict[str, Any] = {}
+        """The standard search verb (POSTs to ``{path}/search``)."""
+        return self._filtered_request(
+            f"{self._path}/search",
+            filters=filters,
+            standard=self._standard_filters,
+            query=query,
+            page=page,
+            page_size=page_size,
+        )
+
+    def _filtered_request(
+        self,
+        path: str,
+        *,
+        filters: Optional[Mapping[str, Any]] = None,
+        standard: Optional[FilterSpecMap] = None,
+        query: Optional[str] = None,
+        extra: Optional[dict[str, Any]] = None,
+        page: Optional[int] = None,
+        page_size: Optional[int] = None,
+    ) -> SearchResult[TItem]:
+        """Run any filterable verb: categorize ``filters``, POST, and parse rows.
+
+        ``standard`` is the method's top-level (protocol) filter map; ``extra`` adds extra
+        body fields (e.g. ``history``'s ``since``). Used by ``_search`` and by resource-
+        specific verbs like ``Gadgets.history``.
+        """
+        body: dict[str, Any] = dict(extra or {})
         if filters:
-            body["filters"] = self._categorize(filters)
+            body["filters"] = self._categorize(filters, standard or {})
         if query is not None:
             body["search"] = query
         page_obj = self._http.fetch_many(
-            f"{self._path}/search",
-            method="POST",
-            json=body,
-            page=page,
-            page_size=page_size,
+            path, method="POST", json=body, page=page, page_size=page_size
         )
         items, errors = parse_batch(self._item_schema, page_obj.items)
         return SearchResult(
@@ -99,18 +122,20 @@ class Resource(Generic[TItem]):
 
     # -- filter categorization -----------------------------------------------------------
 
-    def _categorize(self, filters: Mapping[str, Any]) -> dict[str, Any]:
+    def _categorize(
+        self, filters: Mapping[str, Any], standard: FilterSpecMap
+    ) -> dict[str, Any]:
         """Split filters into standard (top-level) and custom (nested), validating each."""
-        standard: dict[str, Any] = {}
+        top: dict[str, Any] = {}
         custom: dict[str, Any] = {}
         for key, value in filters.items():
-            if key in self._standard_filters:
-                standard[key] = self._validate(self._standard_filters[key], key, value)
+            if key in standard:
+                top[key] = self._validate(standard[key], key, value)
             elif key in self._custom_filters:
                 custom[key] = self._validate(self._custom_filters[key], key, value)
             else:
                 custom[key] = self._validate(DefaultFilter, key, value)
-        out: dict[str, Any] = dict(standard)
+        out: dict[str, Any] = dict(top)
         if custom:
             out["customFilters"] = custom
         return out

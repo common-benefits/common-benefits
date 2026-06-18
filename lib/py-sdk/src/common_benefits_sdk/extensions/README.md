@@ -114,21 +114,23 @@ plugin = define_plugin(
 ```
 
 `RouteFilters[TF]` is a phantom carrier: it exists only so `get_client` can project the
-TypedDict onto the typed `search`. See [Design notes](../../../README.md#design-notes) for why
-route registration is static-only.
+TypedDict onto the typed `search`. Registration is static-only -- at runtime, registered keys
+validate against the generic filter shape rather than introspecting the TypedDict (which hits
+Python's `type[TypedDict]` limitations). The static layer guarantees call-site correctness;
+runtime validation is the backstop.
 
 ## API reference
 
-| Symbol | Description |
-| ------ | ----------- |
-| `schema(...)` | Build a `SchemaWithTransforms` or `SchemaOnly` extension (overloaded). |
-| `define_plugin(schemas, *, routes=Routes(), meta)` | Assemble a typed `Plugin`. |
-| `PluginSchemas` / `Plugin` | Frozen, covariant slot carriers (Widget / Gadget). |
-| `Routes` / `ResourceRoutes` / `RouteFilters` | Per-resource, per-method filter registration carriers. |
-| `CustomField[V]` / `CustomFieldSet` | Typed custom-field primitives. |
-| `build_transforms(...)` | Compile declarative mappings into transform callables. |
-| `validate_into(model, data)` | Validate into a model, routing failures to `TransformResult.errors`. |
-| `TransformResult` / `TransformError` | Unconditional `(result, errors)` transform shape. |
-| `PluginMeta` | Plugin identity (`name`, `source_system`, ...). |
-| `PluginDefinitionError` | Raised at definition time with all problems aggregated. |
-| `EXTENSIBLE_SCHEMA_MAP` | The closed registry of extensible models. |
+| Symbol                                             | Description                                                            |
+| -------------------------------------------------- | ---------------------------------------------------------------------- |
+| `schema(...)`                                      | Build a `SchemaWithTransforms` or `SchemaOnly` extension (overloaded). |
+| `define_plugin(schemas, *, routes=Routes(), meta)` | Assemble a typed `Plugin`.                                             |
+| `PluginSchemas` / `Plugin`                         | Frozen, covariant slot carriers (Widget / Gadget).                     |
+| `Routes` / `ResourceRoutes` / `RouteFilters`       | Per-resource, per-method filter registration carriers.                 |
+| `CustomField[V]` / `CustomFieldSet`                | Typed custom-field primitives.                                         |
+| `build_transforms(...)`                            | Compile declarative mappings into transform callables.                 |
+| `validate_into(model, data)`                       | Validate into a model, routing failures to `TransformResult.errors`.   |
+| `TransformResult` / `TransformError`               | Unconditional `(result, errors)` transform shape.                      |
+| `PluginMeta`                                       | Plugin identity (`name`, `source_system`, ...).                        |
+| `PluginDefinitionError`                            | Raised at definition time with all problems aggregated.                |
+| `EXTENSIBLE_SCHEMA_MAP`                            | The closed registry of extensible models.                              |

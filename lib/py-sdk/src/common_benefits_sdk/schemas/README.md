@@ -71,13 +71,13 @@ TypedDicts an author extends to register custom filters (see the
 
 ## API reference
 
-| Symbol | Description |
-| ------ | ----------- |
-| `CommonBenefitsBaseModel` | Shared base: camelCase wire, snake_case code. |
-| `CustomFieldType` / `CustomField[V]` | Custom-field type tag and generic field. |
-| `WidgetCommon[CF]` / `GadgetCommon[CF]` | Placeholder extensible models. |
-| `f` | Filter value constructors (`eq`, `neq`, `lt`/`lte`/`gt`/`gte`, `like`/`not_like`, `in_`/`not_in`, `between`/`outside`). |
-| `FilterValue` | Union of all filter value models. |
-| filter models | `StringComparison`, `NumberRange`, `StringArray`, ... and `DefaultFilter`. |
-| `WidgetFilters` / `GadgetFilters` | Per-resource standard-filter TypedDicts. |
-| `CustomFilterType` | Closed enum of registrable filter shapes. |
+| Symbol                                  | Description                                                                                                             |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `CommonBenefitsBaseModel`               | Shared base: camelCase wire, snake_case code.                                                                           |
+| `CustomFieldType` / `CustomField[V]`    | Custom-field type tag and generic field.                                                                                |
+| `WidgetCommon[CF]` / `GadgetCommon[CF]` | Placeholder extensible models.                                                                                          |
+| `f`                                     | Filter value constructors (`eq`, `neq`, `lt`/`lte`/`gt`/`gte`, `like`/`not_like`, `in_`/`not_in`, `between`/`outside`). |
+| `FilterValue`                           | Union of all filter value models.                                                                                       |
+| filter models                           | `StringComparison`, `NumberRange`, `StringArray`, ... and `DefaultFilter`.                                              |
+| `WidgetFilters` / `GadgetFilters`       | Per-resource standard-filter TypedDicts.                                                                                |
+| `CustomFilterType`                      | Closed enum of registrable filter shapes.                                                                               |

@@ -19,12 +19,12 @@ poetry run python -m examples.client_demo
 
 ## Files
 
-| File | What it shows |
-| ---- | ------------- |
-| [`source.py`](./source.py) | Sample source-system models (`SourceWidget`, `SourceGadget`) and typed custom-field containers (`WidgetFields`, `GadgetFields`). |
-| [`author.py`](./author.py) | Five ways to build a plugin: mappings + custom fields, hand-written transforms + custom fields, mappings only, schema-only, and route-filter registration. |
-| [`consumer.py`](./consumer.py) | The consumer side: non-optional dot access, typed custom fields, round-trip transforms, and schema-only `parse()`, with `assert_type` lines. |
-| [`client_demo.py`](./client_demo.py) | `plugin.get_client(...).widgets.search(...)` over a stubbed transport: typed rows, per-row parse errors, and plugin-free filter passthrough. |
+| File                                 | What it shows                                                                                                                                              |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`source.py`](./source.py)           | Sample source-system models (`SourceWidget`, `SourceGadget`) and typed custom-field containers (`WidgetFields`, `GadgetFields`).                           |
+| [`author.py`](./author.py)           | Five ways to build a plugin: mappings + custom fields, hand-written transforms + custom fields, mappings only, schema-only, and route-filter registration. |
+| [`consumer.py`](./consumer.py)       | The consumer side: non-optional dot access, typed custom fields, round-trip transforms, and schema-only `parse()`, with `assert_type` lines.               |
+| [`client_demo.py`](./client_demo.py) | `plugin.get_client(...).widgets.search(...)` over a stubbed transport: typed rows, per-row parse errors, and plugin-free filter passthrough.               |
 
 The same flows are covered by the test suite (`tests/`); run `make test` to execute them, or
 `make checks` to also run formatting, linting, and `pyright`.

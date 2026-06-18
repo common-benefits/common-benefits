@@ -38,13 +38,13 @@ Config(base_url="https://api.example.org", api_key="key", timeout=10.0,
        page_size=100, max_items=1000)
 ```
 
-| Field | Env var | Default | Notes |
-| ----- | ------- | ------- | ----- |
-| `base_url` | `CB_API_BASE_URL` | required | must start with `http://` or `https://` |
-| `api_key` | `CB_API_KEY` | none | optional; absent means no auth |
-| `timeout` | `CB_API_TIMEOUT` | `10.0` | seconds |
-| `page_size` | `CB_API_PAGE_SIZE` | `100` | |
-| `max_items` | `CB_API_MAX_ITEMS` | `1000` | cap when auto-paginating |
+| Field       | Env var            | Default  | Notes                                   |
+| ----------- | ------------------ | -------- | --------------------------------------- |
+| `base_url`  | `CB_API_BASE_URL`  | required | must start with `http://` or `https://` |
+| `api_key`   | `CB_API_KEY`       | none     | optional; absent means no auth          |
+| `timeout`   | `CB_API_TIMEOUT`   | `10.0`   | seconds                                 |
+| `page_size` | `CB_API_PAGE_SIZE` | `100`    |                                         |
+| `max_items` | `CB_API_MAX_ITEMS` | `1000`   | cap when auto-paginating                |
 
 `transport` accepts an `httpx` transport (e.g. `httpx.MockTransport`) for offline use/tests.
 
@@ -115,14 +115,14 @@ HTTP and transport errors are normalized to `APIError`.
 
 ## API reference
 
-| Symbol | Description |
-| ------ | ----------- |
-| `Config` | Client configuration with `CB_*` env fallbacks. |
-| `Auth` | `api_key` / `bearer` / `none` factories. |
-| `CommonBenefitsClient` | The typed facade returned by `get_client` (`.widgets`, `.gadgets`). |
-| `BaseClient` | Low-level HTTP: `get` / `post` / `fetch` / `fetch_many` / `url`. |
-| `Resource` / `Widgets` / `Gadgets` | Resource base and the placeholder resources. |
-| `ParsedItem` = `ParsedOk[T] \| ParsedErr` | Per-row parse envelope (discriminate on `.ok`). |
-| `ListResult` / `SearchResult` | Per-row results plus pagination / filter / sort info. |
-| `PaginationInfo` / `SortInfo` / `FilterInfo` | Response envelope metadata. |
-| `APIError` / `FilterError` | HTTP/transport errors and pre-request filter validation errors. |
+| Symbol                                       | Description                                                         |
+| -------------------------------------------- | ------------------------------------------------------------------- |
+| `Config`                                     | Client configuration with `CB_*` env fallbacks.                     |
+| `Auth`                                       | `api_key` / `bearer` / `none` factories.                            |
+| `CommonBenefitsClient`                       | The typed facade returned by `get_client` (`.widgets`, `.gadgets`). |
+| `BaseClient`                                 | Low-level HTTP: `get` / `post` / `fetch` / `fetch_many` / `url`.    |
+| `Resource` / `Widgets` / `Gadgets`           | Resource base and the placeholder resources.                        |
+| `ParsedItem` = `ParsedOk[T] \| ParsedErr`    | Per-row parse envelope (discriminate on `.ok`).                     |
+| `ListResult` / `SearchResult`                | Per-row results plus pagination / filter / sort info.               |
+| `PaginationInfo` / `SortInfo` / `FilterInfo` | Response envelope metadata.                                         |
+| `APIError` / `FilterError`                   | HTTP/transport errors and pre-request filter validation errors.     |

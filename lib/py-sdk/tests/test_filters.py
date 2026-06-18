@@ -18,7 +18,7 @@ from common_benefits_sdk.schemas.filters import (
 )
 from common_benefits_sdk.schemas.models import WidgetCommon
 
-from examples.author import mappings_plugin, routes_plugin
+from examples.author import functions_plugin, mappings_plugin, routes_plugin
 from examples.source import WidgetFields
 
 
@@ -147,3 +147,39 @@ def test_registered_route_filter_is_typed_and_passes_through():
         "operator": "in",
         "value": ["PA", "NJ"],
     }
+
+
+def test_gadget_history_is_a_distinct_filterable_verb():
+    captured: dict[str, Any] = {}
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        captured["path"] = req.url.path
+        captured["body"] = json.loads(req.content) if req.content else None
+        return httpx.Response(
+            200,
+            json={
+                "items": [],
+                "paginationInfo": {
+                    "page": 1,
+                    "pageSize": 0,
+                    "totalItems": 0,
+                    "totalPages": 1,
+                },
+            },
+        )
+
+    config = Config(
+        base_url="https://example.test", transport=httpx.MockTransport(handler)
+    )
+    with functions_plugin.get_client(config) as client:
+        # `history` is a filterable verb other than search: `actor` is its standard filter
+        # (top level), `tag` is unknown (passes through), and `since` is an extra body field.
+        client.gadgets.history(
+            filters={"actor": f.eq("alice"), "tag": f.eq("x")}, since="2024-01-01"
+        )
+
+    assert captured["path"].endswith("/gadgets/history")
+    body = captured["body"]
+    assert body["since"] == "2024-01-01"
+    assert body["filters"]["actor"] == {"operator": "eq", "value": "alice"}
+    assert body["filters"]["customFilters"]["tag"] == {"operator": "eq", "value": "x"}
