@@ -10,16 +10,27 @@
  * `EXTENSIBLE_SCHEMA_MAP`, and `DEFAULT_FILTERS_MAP`) rather than embedded schema
  * values, so there is a single source of truth per schema.
  *
- * Adding a resource is a registry entry plus one line in `build-get-client.ts`'s
- * type map — no bespoke builder. Name-based inference (e.g. `widgets → Widget`)
- * is intentionally rejected: too magical and brittle when protocol model names
- * change without their route names changing.
+ * ## Adding (or replacing) a resource
+ *
+ * 1. Register the extensible model in `extensions/registry.ts` (`EXTENSIBLE_SCHEMA_MAP`).
+ * 2. Add an entry here (`resourceClass` + per-method model names + `defaultFilters`).
+ * 3. Add a fixed slot to `ResourceTypeMap` / `ResourceSlots` in `client/facade.ts`,
+ *    and the matching projection entry to `BuiltClient` in `extensions/plugin/types.ts`.
+ *
+ * The **seam guard** at the bottom of this file makes (2) and (3) a compile error if they
+ * drift — you can't register a resource without a facade slot, or vice versa. Steps (1) and
+ * (2) are additionally type-checked: a registry entry's model names must be a registered
+ * `ExtensibleSchemaName`, and its `defaultFilters` a registered `DefaultFiltersName`.
+ *
+ * Name-based inference (e.g. `widgets → Widget`) is intentionally rejected: too magical and
+ * brittle when protocol model names change without their route names changing.
  */
 
 import type { z } from "zod";
 import type { ExtensibleSchemaName } from "../../extensions/registry";
 import { WidgetDefaultFiltersSchema } from "../../schemas/widget";
 import { GadgetDefaultFiltersSchema } from "../../schemas/gadget";
+import type { ResourceTypeMap } from "../facade";
 import type { ResourceConstructor, ResourceMethod } from "./base";
 import { Widgets } from "./widgets";
 import { Gadgets } from "./gadgets";
@@ -68,3 +79,20 @@ export const RESOURCE_REGISTRY = {
 } as const satisfies Record<string, ResourceRegistryEntry>;
 
 export type ResourceName = keyof typeof RESOURCE_REGISTRY;
+
+// ############################################################################
+// Seam guard
+// ############################################################################
+
+/** True iff `A` and `B` are the exact same type (invariant equality). */
+type Equal<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
+
+/**
+ * The typed facade slots (`ResourceTypeMap` in `client/facade.ts`) must match the registered
+ * resources exactly. If `RESOURCE_REGISTRY` and the facade slots disagree on the resource set,
+ * `Equal<...>` is `false` and this assignment fails to compile — surfacing the missed seam site
+ * here rather than as a silent runtime/type gap (`client.programs` undefined, or untyped).
+ */
+const _resourceSlotsMatchRegistry: Equal<keyof ResourceTypeMap, ResourceName> = true;
+void _resourceSlotsMatchRegistry;
