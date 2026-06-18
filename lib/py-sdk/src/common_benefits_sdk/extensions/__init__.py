@@ -1,6 +1,7 @@
 """Public extension APIs for the CommonBenefits SDK."""
 
 from .plugin import Plugin, PluginSchemas, define_plugin
+from .routes import ResourceRoutes, RouteFilters, Routes
 from .schema import (
     EXTENSIBLE_SCHEMA_MAP,
     CustomField,
@@ -37,6 +38,9 @@ __all__ = [
     "PluginDefinitionError",
     "PluginMeta",
     "PluginSchemas",
+    "ResourceRoutes",
+    "RouteFilters",
+    "Routes",
     "SchemaExtension",
     "SchemaExtensions",
     "SchemaOnly",

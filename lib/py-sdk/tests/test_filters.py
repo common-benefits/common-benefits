@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, assert_type
 
 import httpx
 import pytest
 
-from common_benefits_sdk.client import Config, FilterError
+from common_benefits_sdk.client import Config, FilterError, SearchResult
 from common_benefits_sdk.schemas.filters import (
     NumberComparison,
     NumberRange,
@@ -16,8 +16,10 @@ from common_benefits_sdk.schemas.filters import (
     StringComparison,
     f,
 )
+from common_benefits_sdk.schemas.models import WidgetCommon
 
-from examples.author import mappings_plugin
+from examples.author import mappings_plugin, routes_plugin
+from examples.source import WidgetFields
 
 
 def test_f_helpers_build_typed_models():
@@ -85,11 +87,11 @@ def test_unknown_filters_route_to_custom_filters():
     }
 
 
-def test_ad_hoc_dict_filter_passes_through():
+def test_ad_hoc_filter_passes_through():
     captured: dict[str, Any] = {}
     with _capture_client(captured) as client:
-        # A raw {operator, value} dict (not built via f.*) is accepted for an unknown key.
-        client.widgets.search(filters={"tier": {"operator": "eq", "value": "gold"}})
+        # An unregistered key with a typed filter value passes through to customFilters.
+        client.widgets.search(filters={"tier": f.eq("gold")})
 
     assert captured["body"]["filters"]["customFilters"]["tier"] == {
         "operator": "eq",
@@ -104,3 +106,44 @@ def test_invalid_filter_value_raises_before_request():
         with pytest.raises(FilterError):
             client.widgets.search(filters={"color": f.between(1, 10)})
     assert "body" not in captured  # raised before any request was sent
+
+
+def _routes_capture_client(captured: dict[str, Any]):
+    def handler(req: httpx.Request) -> httpx.Response:
+        if req.content:
+            captured["body"] = json.loads(req.content)
+        return httpx.Response(
+            200,
+            json={
+                "items": [],
+                "paginationInfo": {
+                    "page": 1,
+                    "pageSize": 0,
+                    "totalItems": 0,
+                    "totalPages": 1,
+                },
+            },
+        )
+
+    config = Config(
+        base_url="https://example.test", transport=httpx.MockTransport(handler)
+    )
+    return routes_plugin.get_client(config)
+
+
+def test_registered_route_filter_is_typed_and_passes_through():
+    captured: dict[str, Any] = {}
+    with _routes_capture_client(captured) as client:
+        # `region` is registered on the route via routes_plugin; `color` is standard.
+        res = client.widgets.search(
+            filters={"color": f.eq("red"), "region": f.in_(["PA", "NJ"])}
+        )
+        # The item type still projects through a plugin that uses routes.
+        assert_type(res, SearchResult[WidgetCommon[WidgetFields]])
+
+    filters = captured["body"]["filters"]
+    assert filters["color"] == {"operator": "eq", "value": "red"}  # standard, top level
+    assert filters["customFilters"]["region"] == {  # registered custom, nested
+        "operator": "in",
+        "value": ["PA", "NJ"],
+    }

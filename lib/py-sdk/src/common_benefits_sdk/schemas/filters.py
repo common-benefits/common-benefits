@@ -10,7 +10,7 @@ dict for ad hoc passthrough).
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Any, List, Literal, Union, overload
+from typing import Any, List, Literal, TypedDict, Union, overload
 
 from .base import CommonBenefitsBaseModel
 
@@ -21,6 +21,22 @@ ComparisonOperator = Literal["gt", "gte", "lt", "lte"]
 ArrayOperator = Literal["in", "notIn"]
 StringOperator = Literal["like", "notLike"]
 RangeOperator = Literal["between", "outside"]
+
+# Every operator any filter may use (the superset).
+AllOperator = Literal[
+    "eq",
+    "neq",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "in",
+    "notIn",
+    "like",
+    "notLike",
+    "between",
+    "outside",
+]
 
 
 # --- Shared value sub-models ------------------------------------------------------------
@@ -96,11 +112,28 @@ class MoneyRange(CommonBenefitsBaseModel):
     value: MoneyRangeValue
 
 
-class DefaultFilter(CommonBenefitsBaseModel):
-    """Generic filter shape for ad hoc (unregistered) custom filters passed through."""
+# The superset of value shapes any filter may carry.
+FilterValueVariant = Union[
+    str,
+    List[str],
+    float,
+    List[float],
+    NumberRangeValue,
+    DateRangeValue,
+    MoneyRangeValue,
+    Money,
+]
 
-    operator: str
-    value: Any
+
+class DefaultFilter(CommonBenefitsBaseModel):
+    """Generic filter shape for ad hoc (unregistered) custom filters passed through.
+
+    Constrained to the superset ``{operator: <any operator>, value: <any value variant>}``
+    so a passthrough filter still conforms to the protocol filter shape (never arbitrary).
+    """
+
+    operator: AllOperator
+    value: FilterValueVariant
 
 
 # Any concrete filter value a consumer can pass for one key.
@@ -241,3 +274,22 @@ class f:
         return NumberRange(
             operator="outside", value=NumberRangeValue(min=low, max=high)
         )
+
+
+# --- Per-resource standard (protocol) filter shapes -------------------------------------
+# These TypedDicts give the consumer autocomplete + per-key value typing for a resource's
+# standard filters. A plugin author extends one to register custom filters for a route:
+#
+#     class MyWidgetFilters(WidgetFilters, total=False):
+#         region: StringArray
+
+
+class WidgetFilters(TypedDict, total=False):
+    """Standard filters for the widgets search route."""
+
+    color: StringComparison
+    weight: NumberRange
+
+
+class GadgetFilters(TypedDict, total=False):
+    """Standard filters for the gadgets search route (none defined yet)."""

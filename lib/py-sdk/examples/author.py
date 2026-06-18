@@ -9,11 +9,15 @@ from __future__ import annotations
 from common_benefits_sdk.extensions import (
     PluginMeta,
     PluginSchemas,
+    ResourceRoutes,
+    RouteFilters,
+    Routes,
     TransformResult,
     define_plugin,
     schema,
     validate_into,
 )
+from common_benefits_sdk.schemas.filters import StringArray, WidgetFilters
 from common_benefits_sdk.schemas.models import GadgetCommon, WidgetCommon
 
 from .source import (
@@ -154,4 +158,21 @@ bare_plugin = define_plugin(
 schema_only_plugin = define_plugin(
     PluginSchemas(Widget=schema(common_schema=WidgetCommon[WidgetFields])),
     meta=PluginMeta(name="schema-only widget plugin", source_system="acme-widgets"),
+)
+
+
+# --- Scenario 5: register a custom filter on the widgets search route -------------------
+# The author extends the standard WidgetFilters TypedDict with a registered custom filter,
+# then names it in routes. Consumers then get `region` autocompleted on widgets.search,
+# alongside the standard color/weight, while unknown keys still pass through.
+
+
+class WidgetSearchFilters(WidgetFilters, total=False):
+    region: StringArray
+
+
+routes_plugin = define_plugin(
+    PluginSchemas(Widget=schema(common_schema=WidgetCommon[WidgetFields])),
+    routes=Routes(widget=ResourceRoutes(search=RouteFilters[WidgetSearchFilters]())),
+    meta=PluginMeta(name="widget routes plugin", source_system="acme-widgets"),
 )

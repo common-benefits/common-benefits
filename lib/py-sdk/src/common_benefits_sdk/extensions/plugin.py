@@ -1,14 +1,16 @@
 """Plugin assembly: ``PluginSchemas``, ``Plugin``, ``define_plugin``, and ``get_client``.
 
 A plugin maps the schema extensions an author builds with ``schema(...)`` onto the
-registered extensible schemas, keyed by registry name. Schemas a plugin does not extend
-fall back to the base schema (a ``SchemaOnly``), never ``None``, so consumers get fully
-typed, non-optional dot access: ``plugin.schemas.Widget``.
+registered extensible schemas, and (optionally) registers per-route custom filters via
+``routes``. Schemas a plugin does not extend fall back to the base schema (a ``SchemaOnly``),
+never ``None``; routes a plugin does not register fall back to the resource's standard
+filters. So consumers get fully typed, non-optional dot access: ``plugin.schemas.Widget``
+and ``client.widgets.search(filters=...)``.
 
-``PluginSchemas`` and ``Plugin`` are frozen dataclasses with covariant type parameters
-(read-only, so covariance is sound). That covariance is what lets ``get_client`` recover
-each slot's concrete common-model item type via a ``self`` annotation, with no call-site
-type arguments.
+``PluginSchemas``, ``Plugin``, and the route carriers are frozen dataclasses with covariant
+type parameters (read-only, so covariance is sound). That covariance lets ``get_client``
+recover each slot's concrete common-model item type *and* each route's filter TypedDict via
+a single ``self`` annotation, with no call-site type arguments.
 """
 
 from __future__ import annotations
@@ -20,23 +22,33 @@ import typing_extensions as te
 from pydantic import BaseModel
 
 from ..client import Auth, BaseClient, CommonBenefitsClient, Config, Gadgets, Widgets
+from ..schemas.filters import GadgetFilters, WidgetFilters
 from ..schemas.models import GadgetCommon, WidgetCommon
+from .routes import ResourceRoutes, RouteFilters, Routes
 from .schema import SchemaExtension, SchemaOnly, SchemaWithTransforms, schema
 from .types import PluginMeta
 
-# The fallback for a schema a plugin does not extend: the base schema, no custom fields, no
-# transforms. A SchemaOnly, so unextended slots have no to_common either.
+# Fallbacks for an unextended schema slot: the base schema, no custom fields, no transforms.
 DefaultWidget = SchemaOnly[WidgetCommon]
 DefaultGadget = SchemaOnly[GadgetCommon]
 
-# Covariant: a plugin whose slot holds a SchemaWithTransforms is usable wherever the base
-# SchemaExtension is expected, which is what get_client's projection relies on.
+# Covariant slot carriers: a plugin whose slot holds a SchemaWithTransforms is usable
+# wherever the base SchemaExtension is expected, which is what get_client's projection relies
+# on. The route carriers default to each resource's standard filters.
 _TWidget = te.TypeVar("_TWidget", covariant=True, default=DefaultWidget)
 _TGadget = te.TypeVar("_TGadget", covariant=True, default=DefaultGadget)
+_RWidget = te.TypeVar(
+    "_RWidget", covariant=True, default="ResourceRoutes[RouteFilters[WidgetFilters]]"
+)
+_RGadget = te.TypeVar(
+    "_RGadget", covariant=True, default="ResourceRoutes[RouteFilters[GadgetFilters]]"
+)
 
-# Item-type variables recovered by get_client from each slot's common model.
+# Types get_client recovers from the plugin: per-slot item types and per-route filter types.
 TWItem = TypeVar("TWItem", bound=BaseModel)
 TGItem = TypeVar("TGItem", bound=BaseModel)
+TFW = TypeVar("TFW")
+TFG = TypeVar("TFG")
 
 
 @dataclass(frozen=True)
@@ -44,14 +56,11 @@ class PluginSchemas(Generic[_TWidget, _TGadget]):
     """Maps your extensions to the extensible schemas. Construct it directly.
 
     Pass one extension per schema you extend, keyed by the registered schema name. Schemas
-    you omit fall back to the base schema (a ``SchemaOnly``), never ``None``. Each slot's
-    type is inferred concretely, so consumers get non-optional dot access::
+    you omit fall back to the base schema (a ``SchemaOnly``), never ``None``::
 
         plugin = define_plugin(PluginSchemas(Widget=widget_ext), meta=...)
         plugin.schemas.Widget   # the extension you passed
         plugin.schemas.Gadget   # SchemaOnly[GadgetCommon]
-
-    There is one field per registered extensible schema.
     """
 
     Widget: _TWidget = field(
@@ -63,42 +72,52 @@ class PluginSchemas(Generic[_TWidget, _TGadget]):
 
 
 @dataclass(frozen=True)
-class Plugin(Generic[_TWidget, _TGadget]):
+class Plugin(Generic[_TWidget, _TGadget, _RWidget, _RGadget]):
     """The plugin singleton consumers import.
 
-    ``schemas`` is a typed frozen dataclass, so ``plugin.schemas.Widget`` is fully typed.
-    ``get_client`` builds a typed client whose resources are typed from the plugin's
-    per-slot common models.
+    ``schemas`` and ``routes`` are typed frozen dataclasses, so ``plugin.schemas.Widget`` is
+    fully typed and ``get_client`` builds a client whose resources are typed from the
+    plugin's common models and registered route filters.
     """
 
     schemas: PluginSchemas[_TWidget, _TGadget]
+    routes: Routes[_RWidget, _RGadget]
     meta: PluginMeta
 
     def get_client(
-        self: "Plugin[SchemaExtension[TWItem], SchemaExtension[TGItem]]",
+        self: Plugin[
+            SchemaExtension[TWItem],
+            SchemaExtension[TGItem],
+            ResourceRoutes[RouteFilters[TFW]],
+            ResourceRoutes[RouteFilters[TFG]],
+        ],
         config: Optional[Config] = None,
         auth: Optional[Auth] = None,
-    ) -> CommonBenefitsClient[TWItem, TGItem]:
-        """Build a typed client; resources are typed from the plugin's common models.
+    ) -> CommonBenefitsClient[TWItem, TFW, TGItem, TFG]:
+        """Build a typed client from the plugin's common models and registered filters.
 
-        ``client.widgets.search(...)`` returns rows typed as this plugin's Widget model
-        (custom fields included), with no call-site type arguments.
+        ``client.widgets.search(filters=...)`` returns rows typed as this plugin's Widget
+        model and autocompletes the registered filter keys, with no call-site type args.
         """
         http = BaseClient(config, auth)
-        return CommonBenefitsClient(
+        client = CommonBenefitsClient(
             http=http,
             widgets=Widgets(http, self.schemas.Widget.common_schema, "widgets"),
             gadgets=Gadgets(http, self.schemas.Gadget.common_schema, "gadgets"),
         )
+        return cast("CommonBenefitsClient[TWItem, TFW, TGItem, TFG]", client)
 
 
 def define_plugin(
-    schemas: PluginSchemas[_TWidget, _TGadget], *, meta: PluginMeta
-) -> Plugin[_TWidget, _TGadget]:
-    """Assemble the plugin from a ``PluginSchemas`` instance and metadata.
+    schemas: PluginSchemas[_TWidget, _TGadget],
+    *,
+    routes: Routes[_RWidget, _RGadget] = Routes(),
+    meta: PluginMeta,
+) -> Plugin[_TWidget, _TGadget, _RWidget, _RGadget]:
+    """Assemble the plugin from schema extensions, optional route registrations, and metadata.
 
-    Each attribute name must equal the entry's ``schema_name``, so ``schemas.Widget`` really
-    holds the Widget extensible schema.
+    Each schema attribute name must equal the entry's ``schema_name``, so ``schemas.Widget``
+    really holds the Widget extensible schema.
 
     Raises:
         PluginDefinitionError: If any slot does not hold a schema extension, or holds one
@@ -118,4 +137,4 @@ def define_plugin(
             )
     if errors:
         raise PluginDefinitionError("plugin", errors)
-    return Plugin(schemas=schemas, meta=meta)
+    return Plugin(schemas=schemas, routes=routes, meta=meta)

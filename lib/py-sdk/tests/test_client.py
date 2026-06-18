@@ -14,6 +14,7 @@ from common_benefits_sdk.client import (
     ParsedOk,
     SearchResult,
 )
+from common_benefits_sdk.schemas.filters import f
 from common_benefits_sdk.schemas.models import WidgetCommon
 
 from examples.author import bare_plugin, mappings_plugin
@@ -114,12 +115,7 @@ def test_filters_pass_through_without_plugin():
 
     # bare_plugin registers no Widget custom fields, yet an arbitrary filter passes through.
     with _client(bare_plugin, handler) as client:
-        client.widgets.search(
-            filters={
-                "color": {"operator": "eq", "value": "red"},
-                "region": {"operator": "in", "value": ["PA"]},
-            }
-        )
+        client.widgets.search(filters={"color": f.eq("red"), "region": f.in_(["PA"])})
 
     body = captured["body"]
     # "color" is a standard filter -> top level; "region" is unknown -> customFilters.
