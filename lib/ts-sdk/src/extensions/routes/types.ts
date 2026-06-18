@@ -6,27 +6,12 @@
  */
 
 import type { z } from "zod";
-import type { CustomFilterSchema } from "./helpers";
+import type { CustomFilterSchema, CustomFilterType } from "./helpers";
 
 // ############################################################################
-// Filter vocabulary (moved here from the shared extensions/types.ts + specs.ts)
+// Filter spec (the filter vocabulary itself, CustomFilterType, is derived from
+// the filter registry in ./helpers so it can't drift from the map)
 // ############################################################################
-
-/**
- * The narrow set of filter families adopters can attach to a search route. Each
- * key mirrors a per-type filter schema name (e.g. `"stringComparison"` ↔
- * `StringComparisonFilterSchema`). `integer` flows through `numberComparison`.
- */
-export type CustomFilterType =
-  | "stringComparison"
-  | "stringArray"
-  | "numberComparison"
-  | "numberArray"
-  | "numberRange"
-  | "dateComparison"
-  | "dateRange"
-  | "moneyComparison"
-  | "moneyRange";
 
 /** Specification for a custom filter on a search route. */
 export interface CustomFilterSpec {

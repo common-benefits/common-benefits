@@ -18,7 +18,7 @@ import type { ResourceConstructor, ResourceMethod } from "../../client/resources
 import { DEFAULT_FILTERS_MAP, RESOURCE_REGISTRY } from "../../client/resources/registry";
 import { withCustomFilters } from "../routes";
 import type { PluginRoutes } from "../routes";
-import { EXTENSIBLE_SCHEMA_MAP } from "../registry";
+import { EXTENSIBLE_SCHEMA_MAP, type ExtensibleSchemaName } from "../registry";
 import {
   withCustomFields,
   type SchemaExtensions,
@@ -26,7 +26,6 @@ import {
   type SchemaOnly,
   type SchemaWithTransforms,
 } from "../schemas";
-import type { ExtensibleSchemaName } from "../schemas/types";
 import { TransformError, type TransformResult } from "../transforms";
 import { buildTransforms } from "../transforms/builder";
 import type { BuiltClient, ResolvedPluginSchemas } from "./types";

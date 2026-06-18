@@ -9,7 +9,7 @@ import { z } from "zod";
 import type { CommonBenefitsClient } from "../../client/facade";
 import { GadgetBaseSchema, GadgetDefaultFiltersSchema } from "../../schemas/gadget";
 import { WidgetBaseSchema, WidgetDefaultFiltersSchema } from "../../schemas/widget";
-import { EXTENSIBLE_SCHEMA_MAP } from "../registry";
+import { EXTENSIBLE_SCHEMA_MAP, type ExtensibleSchemaName } from "../registry";
 import type {
   CustomFieldSpec,
   SchemaExtensions,
@@ -17,7 +17,7 @@ import type {
   SchemaWithTransforms,
   SchemaWithCustomFields,
 } from "../schemas";
-import type { ExtensibleSchemaName, HasCustomFields } from "../schemas/types";
+import type { HasCustomFields } from "../schemas/types";
 import type { PluginRoutes } from "../routes";
 import type { ResolvedSearchFilters } from "../routes/types";
 

@@ -8,21 +8,15 @@
 import { z } from "zod";
 import { CustomFieldSchema, CustomFieldTypeEnum } from "../../schemas/fields";
 import type { Handler } from "../../utils/transformation";
+import type { ExtensibleSchemaName } from "../registry";
 import type { TransformResult } from "../transforms";
 
 // ############################################################################
-// Custom-field vocabulary (moved here from the shared extensions/types.ts)
+// Custom-field vocabulary
 // ############################################################################
 
-/** JSON-schema type tag for a custom field's value. */
+/** JSON-schema type tag for a custom field's value (derived from the Zod enum). */
 export type CustomFieldType = z.infer<typeof CustomFieldTypeEnum>;
-
-/**
- * Names of base models that support custom-field extensions. For this
- * scaffolding the dummy `Widget` / `Gadget` schemas are registered; when the
- * Programs route lands, `"Program"` joins.
- */
-export type ExtensibleSchemaName = "Widget" | "Gadget";
 
 type CustomField = z.infer<typeof CustomFieldSchema>;
 
