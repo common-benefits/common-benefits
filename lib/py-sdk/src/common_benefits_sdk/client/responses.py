@@ -1,8 +1,16 @@
 """Response envelope models and the typed per-resource result objects.
 
-``PaginationInfo`` / ``SortInfo`` / ``FilterInfo`` model the protocol response envelope.
-``ListResult`` / ``SearchResult`` are what a resource method returns: the per-row
-``ParsedItem`` list plus the envelope metadata and a flat ``parse_errors`` list.
+The composable success envelopes — ``Ok`` / ``Paginated`` / ``Sorted`` / ``Filtered`` — mirror
+the protocol response shapes (and the TypeScript SDK's ``responses.ts``): each builds on the
+previous (``Ok`` adds ``data``; ``Paginated`` adds ``items`` + ``pagination_info``; ``Sorted``
+adds ``sort_info``; ``Filtered`` adds a typed ``filter_info``). ``PaginationInfo`` / ``SortInfo``
+/ ``FilterInfo`` are the metadata pieces they carry.
+
+``ListResult`` / ``SearchResult`` are the *ergonomic* objects a resource method returns: the
+per-row ``ParsedItem`` list plus the envelope metadata and a flat ``parse_errors`` list. They
+sit on top of the envelopes so one bad row doesn't fail the batch; ``_RawPage`` is the raw form
+the client parses (items left as dicts for per-row parsing — the analog of the TS client
+parsing ``Paginated<unknown>``).
 """
 
 from __future__ import annotations
@@ -16,6 +24,8 @@ from ..schemas.base import CommonBenefitsBaseModel
 from .results import ParseError, ParsedItem
 
 TItem = TypeVar("TItem", bound=BaseModel)
+T = TypeVar("T")
+F = TypeVar("F")
 
 
 class PaginationInfo(CommonBenefitsBaseModel):
@@ -40,6 +50,50 @@ class FilterInfo(CommonBenefitsBaseModel):
 
     filters: dict[str, Any] = Field(default_factory=dict)
     errors: Optional[list[str]] = None
+
+
+class TypedFilterInfo(CommonBenefitsBaseModel, Generic[F]):
+    """The ``filterInfo`` of a filtered response, with ``filters`` typed by ``F``."""
+
+    filters: F
+    errors: Optional[list[str]] = None
+
+
+# ############################################################################
+# Composable success envelopes (mirror ts-sdk/src/client/responses.ts)
+# ############################################################################
+
+
+class Success(CommonBenefitsBaseModel):
+    """The base success envelope: an HTTP status and a message."""
+
+    status: int = 200
+    message: str = "Success"
+
+
+class Ok(Success, Generic[T]):
+    """A single-item success response: ``{ status, message, data }``."""
+
+    data: T
+
+
+class Paginated(Success, Generic[T]):
+    """A paginated success response: adds ``items`` and ``pagination_info``."""
+
+    items: list[T] = Field(default_factory=list)
+    pagination_info: PaginationInfo
+
+
+class Sorted(Paginated[T], Generic[T]):
+    """A paginated + sorted response: adds ``sort_info``."""
+
+    sort_info: SortInfo
+
+
+class Filtered(Sorted[T], Generic[T, F]):
+    """A paginated + sorted + filtered response: adds a typed ``filter_info``."""
+
+    filter_info: TypedFilterInfo[F]
 
 
 class _RawPage(CommonBenefitsBaseModel):
