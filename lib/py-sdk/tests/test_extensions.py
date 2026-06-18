@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any, cast
+
 import pytest
 
 from common_benefits_sdk.extensions import (
@@ -137,10 +139,9 @@ def test_mappings_unknown_output_field_rejected():
 
 def test_define_plugin_rejects_mismatched_slot():
     widget_ext = schema(common_schema=WidgetCommon)
-    bad = PluginSchemas()
-    # Deliberately put a Widget extension in the Gadget slot (setattr to bypass the
-    # static invariance check that correctly forbids this at type-check time).
-    setattr(bad, "Gadget", widget_ext)
+    # Deliberately put a Widget extension in the Gadget slot (cast bypasses the static
+    # guard that correctly forbids this) to exercise the runtime name-match check.
+    bad = PluginSchemas(Gadget=cast(Any, widget_ext))
     with pytest.raises(PluginDefinitionError):
         define_plugin(bad, meta=PluginMeta(name="bad", source_system="x"))
 
