@@ -38,15 +38,21 @@ export type {
   SortedResultsInfo,
   PaginatedBodyParams,
 } from "./responses";
-export { Widgets, RESOURCE_REGISTRY } from "./resources";
+export { Widgets, Gadgets, Resource, RESOURCE_REGISTRY } from "./resources";
 export type {
   ResourceOptions,
   ResourceConstructor,
   ListOptions,
+  ListResult,
+  SearchResult,
+  FilteredRequestOptions,
   SearchOptions,
   WidgetsListResult,
   WidgetsSearchResult,
+  GadgetSearchOptions,
+  GadgetHistoryOptions,
   ResourceMethod,
   ResourceName,
   ResourceRegistryEntry,
 } from "./resources";
+export type { CommonBenefitsClient, ResourceSlots, ResourceTypeMap, ResourceTypes } from "./facade";

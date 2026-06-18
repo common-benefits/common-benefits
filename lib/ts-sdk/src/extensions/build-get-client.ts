@@ -3,25 +3,27 @@
  * `Client` already has typed resources attached.
  *
  * Construction is generic and registry-driven (no per-resource builder). For
- * each resource named in `routes`, the factory:
- *   1. Looks up its entry in `RESOURCE_REGISTRY` (`resourceClass`, per-method
- *      `schemas`, `defaultFilters`).
+ * each entry in `RESOURCE_REGISTRY` (every registered resource is always built,
+ * matching the fixed slots on the typed facade), the factory:
+ *   1. Reads its `resourceClass`, per-method `schemas`, and `defaultFilters`.
  *   2. Resolves each method's item schema by name through the plugin's resolved
  *      schemas (the extended `commonSchema`, or the base schema) and passes them
  *      as `itemSchemas` so call-site parsing uses the typed schema automatically.
- *   3. Builds a `customFiltersSchema` via `withCustomFilters()` from each
- *      `routes[resource].search.filters` declaration, and passes both it and the
- *      protocol `defaultFiltersSchema` to the resource so `search({ filters })`
+ *   3. Builds a `customFiltersSchema` via `withCustomFilters()` from the
+ *      resource's `routes[resource].search.filters` declaration (if any), and
+ *      passes both it and the protocol `defaultFiltersSchema` so `search({ filters })`
  *      can split standard from custom filters before the request.
+ *
+ * The return type is the explicit fixed-slot `CommonBenefitsClient` facade, with
+ * each slot's item/filter types projected from the plugin (see `BuiltClient`).
  */
 
 import { z } from "zod";
 import { Client } from "../client/client";
 import type { ClientConfig } from "../client/config";
+import type { CommonBenefitsClient } from "../client/facade";
 import type { ResourceConstructor, ResourceMethod } from "../client/resources/base";
 import { DEFAULT_FILTERS_MAP, RESOURCE_REGISTRY } from "../client/resources/registry";
-import type { Widgets } from "../client/resources/widgets";
-import type { Gadgets } from "../client/resources/gadgets";
 import { WidgetBaseSchema, WidgetDefaultFiltersSchema } from "../schemas/widget";
 import { GadgetBaseSchema, GadgetDefaultFiltersSchema } from "../schemas/gadget";
 import type { ResolvedPluginSchemas } from "./define-plugin";
@@ -89,50 +91,39 @@ type ResolvedCustomFilters<TMethods> = TMethods extends {
 type SearchFiltersInput<TDefaults, TCustoms> = TDefaults &
   TCustoms & { [key: string]: FilterInput | undefined };
 
-/** Type-level map of resource name → resource class. */
-interface ResourceClassMap {
-  widgets: typeof Widgets;
-  gadgets: typeof Gadgets;
-}
+/** A route's method specs for resource `K`, or `undefined` when none declared. */
+type RouteFor<TRoutes extends PluginRoutes, K extends string> = K extends keyof TRoutes
+  ? TRoutes[K]
+  : undefined;
 
-/** Resolves the precise resource instance type for a route key. */
-type InstanceFor<
-  K extends keyof ResourceClassMap,
-  TSchemas extends SchemaExtensions,
+/** The filters bag a resource's `search` accepts: standard + registered custom + ad hoc. */
+type ResolvedSearchFilters<
   TRoutes extends PluginRoutes,
-> = K extends "widgets"
-  ? Widgets<
-      ResolvedItemType<TSchemas, "Widget", WidgetBase>,
-      SearchFiltersInput<
-        WidgetDefaultFilters,
-        ResolvedCustomFilters<K extends keyof TRoutes ? TRoutes[K] : never>
-      > &
-        Record<string, unknown>
-    >
-  : K extends "gadgets"
-    ? Gadgets<
-        ResolvedItemType<TSchemas, "Gadget", GadgetBase>,
-        SearchFiltersInput<
-          GadgetDefaultFilters,
-          ResolvedCustomFilters<K extends keyof TRoutes ? TRoutes[K] : never>
-        > &
-          Record<string, unknown>
-      >
-    : never;
+  K extends string,
+  TDefaults,
+> = SearchFiltersInput<TDefaults, ResolvedCustomFilters<RouteFor<TRoutes, K>>> &
+  Record<string, unknown>;
 
 /**
- * Mapped type producing each typed resource attached to the built client. Every
- * registered resource is always present (mirroring the fixed slots on the
- * Python facade), with its precise instance type resolved from `schemas` (item
- * type) and `routes` (filters type).
+ * Final return type of `getClient(config)`: the {@link CommonBenefitsClient}
+ * facade with each slot's item and filter types projected from the plugin's
+ * already-bound `TSchemas` / `TRoutes` into the structured resource map. One
+ * named entry per resource (no mapped type over a registry); the `item` comes
+ * from `schemas`, the `filters` from `routes`.
  */
-export type ClientResources<TRoutes extends PluginRoutes, TSchemas extends SchemaExtensions> = {
-  [K in keyof ResourceClassMap]: InstanceFor<K, TSchemas, TRoutes>;
-};
-
-/** Final return type of `getClient(config)`. */
-export type BuiltClient<TRoutes extends PluginRoutes, TSchemas extends SchemaExtensions> = Client &
-  ClientResources<TRoutes, TSchemas>;
+export type BuiltClient<
+  TRoutes extends PluginRoutes,
+  TSchemas extends SchemaExtensions,
+> = CommonBenefitsClient<{
+  widgets: {
+    item: ResolvedItemType<TSchemas, "Widget", WidgetBase>;
+    filters: ResolvedSearchFilters<TRoutes, "widgets", WidgetDefaultFilters>;
+  };
+  gadgets: {
+    item: ResolvedItemType<TSchemas, "Gadget", GadgetBase>;
+    filters: ResolvedSearchFilters<TRoutes, "gadgets", GadgetDefaultFilters>;
+  };
+}>;
 
 // ############################################################################
 // buildGetClient
@@ -152,8 +143,9 @@ export interface BuildGetClientOptions<
 
 /**
  * Returns a `getClient(config)` factory whose `Client` instance already has the
- * configured resources attached. Construction loops over `routes` and builds
- * each registered resource generically from `RESOURCE_REGISTRY`.
+ * typed resources attached. Construction loops over `RESOURCE_REGISTRY` and
+ * builds every registered resource generically; `routes` only supplies the
+ * registered custom filters for resources that declared any.
  */
 export function buildGetClient<
   const TSchemas extends SchemaExtensions,

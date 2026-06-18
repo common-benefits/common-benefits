@@ -29,7 +29,7 @@ export { buildTransforms } from "./build-transforms";
 export type { BuildTransformsOptions, RawTransforms } from "./build-transforms";
 
 export { buildGetClient } from "./build-get-client";
-export type { BuildGetClientOptions, BuiltClient, ClientResources } from "./build-get-client";
+export type { BuildGetClientOptions, BuiltClient } from "./build-get-client";
 
 export { withCustomFields } from "./with-custom-fields";
 export type { WithCustomFieldsResult } from "./with-custom-fields";
