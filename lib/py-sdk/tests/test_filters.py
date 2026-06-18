@@ -18,7 +18,7 @@ from common_benefits_sdk.schemas.filters import (
 )
 from common_benefits_sdk.schemas.models import WidgetCommon
 
-from examples.author import functions_plugin, mappings_plugin, routes_plugin
+from examples import functions_plugin, mappings_plugin, routes_plugin
 from examples.source import WidgetFields
 
 

@@ -1,30 +1,30 @@
 # Examples
 
-Runnable, offline examples. The client examples use an `httpx.MockTransport`, so no network
-or running API is needed.
+Runnable, offline examples, one file per scenario. Each file has an **Author** section (build
+the plugin) and a **Consumer** section (use it, with `assert_type` lines pyright verifies); the
+custom-filters scenario uses an `httpx.MockTransport`, so no network or running API is needed.
 
 ## Running
 
 ```sh
 poetry install
 
-# Author + consumer extension samples (transforms, custom fields, schema-only), with
-# assert_type checks that pyright verifies:
-poetry run python -m examples.consumer
-
-# The typed client end to end: search returns typed rows, one bad row is isolated, and
-# custom filters pass through with no plugin:
-poetry run python -m examples.client_demo
+python -m examples                  # run every scenario in order
+python -m examples.custom_filters   # run one scenario
 ```
 
-## Files
+## Scenarios
 
-| File                                 | What it shows                                                                                                                                              |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`source.py`](./source.py)           | Sample source-system models (`SourceWidget`, `SourceGadget`) and typed custom-field containers (`WidgetFields`, `GadgetFields`).                           |
-| [`author.py`](./author.py)           | Five ways to build a plugin: mappings + custom fields, hand-written transforms + custom fields, mappings only, schema-only, and route-filter registration. |
-| [`consumer.py`](./consumer.py)       | The consumer side: non-optional dot access, typed custom fields, round-trip transforms, and schema-only `parse()`, with `assert_type` lines.               |
-| [`client_demo.py`](./client_demo.py) | `plugin.get_client(...).widgets.search(...)` over a stubbed transport: typed rows, per-row parse errors, and plugin-free filter passthrough.               |
+| #   | File                                                         | Author shows                            | Consumer shows                                                                                          |
+| --- | ------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 1   | [`custom_fields.py`](./custom_fields.py)                     | custom fields only, no transforms       | `parse()` a record, typed custom-field access                                                           |
+| 2   | [`custom_fields_mappings.py`](./custom_fields_mappings.py)   | custom fields + declarative mappings    | `to_common` / `from_common`, typed field, round-trip                                                    |
+| 3   | [`custom_fields_functions.py`](./custom_fields_functions.py) | custom fields + hand-written transforms | hand-written `to_common` / `from_common`, round-trip                                                    |
+| 4   | [`mappings_only.py`](./mappings_only.py)                     | declarative mappings, no custom fields  | mapped base fields                                                                                      |
+| 5   | [`custom_filters.py`](./custom_filters.py)                   | register a custom filter on a route     | typed `client.widgets.search(...)`: standard key top-level, registered + ad hoc keys to `customFilters` |
+
+[`source.py`](./source.py) holds the shared sample source-system models (`SourceWidget`,
+`SourceGadget`) and the typed custom-field containers (`WidgetFields`, `GadgetFields`).
 
 The same flows are covered by the test suite (`tests/`); run `make test` to execute them, or
 `make checks` to also run formatting, linting, and `pyright`.

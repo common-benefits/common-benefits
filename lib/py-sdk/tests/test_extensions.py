@@ -19,7 +19,7 @@ from common_benefits_sdk.extensions import (
 from common_benefits_sdk.schemas.fields import CustomFieldType
 from common_benefits_sdk.schemas.models import GadgetCommon, WidgetCommon
 
-from examples.author import (
+from examples import (
     bare_plugin,
     functions_plugin,
     mappings_plugin,

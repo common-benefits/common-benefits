@@ -15,7 +15,7 @@ import pytest
 from common_benefits_sdk.client import Config, FilterError, ParsedErr, ParsedOk
 from common_benefits_sdk.schemas.filters import f
 
-from examples.author import mappings_plugin
+from examples import mappings_plugin
 from examples.source import SAMPLE_WIDGET_SOURCE, SourceWidget
 
 GOOD = {

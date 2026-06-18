@@ -17,7 +17,7 @@ from common_benefits_sdk.client import (
 from common_benefits_sdk.schemas.filters import f
 from common_benefits_sdk.schemas.models import WidgetCommon
 
-from examples.author import bare_plugin, mappings_plugin
+from examples import bare_plugin, mappings_plugin
 from examples.source import WidgetFields
 
 GOOD_WIDGET = {
