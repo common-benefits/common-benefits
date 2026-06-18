@@ -65,7 +65,12 @@ export type SchemaWithCustomFields<
   TSpecs extends Record<string, CustomFieldSpec>,
 > = z.ZodObject<
   Omit<TSchema["shape"], "customFields"> & {
-    customFields: z.ZodOptional<z.ZodType<TypedCustomFields<TSpecs>>>;
+    // Mirror the runtime combinator `withCustomFields()` applies to the slot
+    // (`.passthrough().nullish()`) by deriving the optionality from Zod's own
+    // `nullish` method return type, so the declared type can't claim a different
+    // optionality than the schema actually has. If the runtime combinator
+    // changes (e.g. to `.optional()`), change `["nullish"]` to match.
+    customFields: ReturnType<z.ZodType<TypedCustomFields<TSpecs>>["nullish"]>;
   }
 >;
 
