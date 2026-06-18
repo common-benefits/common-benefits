@@ -14,6 +14,7 @@ from typing import Optional, assert_type
 import httpx
 
 from common_benefits_sdk.client import Config, ParsedOk, SearchResult
+from common_benefits_sdk.schemas.filters import f
 from common_benefits_sdk.schemas.models import WidgetCommon
 
 from .author import bare_plugin, mappings_plugin
@@ -68,7 +69,7 @@ def main() -> None:
     print("Client demo — typed search with a plugin's custom fields")
     with mappings_plugin.get_client(_config()) as client:
         result = client.widgets.search(
-            filters={"color": {"operator": "eq", "value": "red"}}
+            filters={"color": f.eq("red"), "weight": f.between(1, 10)}
         )
         assert_type(result, SearchResult[WidgetCommon[WidgetFields]])
 
@@ -87,9 +88,7 @@ def main() -> None:
 
     print("Client demo — custom filter passthrough with no plugin extension")
     with bare_plugin.get_client(_config()) as client2:
-        result2 = client2.widgets.search(
-            filters={"region": {"operator": "in", "value": ["PA", "NJ"]}}
-        )
+        result2 = client2.widgets.search(filters={"region": f.in_(["PA", "NJ"])})
         _check("passthrough search returned rows", len(result2.items) > 0)
 
 

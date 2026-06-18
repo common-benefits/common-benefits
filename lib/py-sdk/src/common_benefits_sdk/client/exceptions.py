@@ -15,3 +15,15 @@ class APIError(Exception):
         self.status = status
         self.body = body
         super().__init__(f"{status}: {message}")
+
+
+class FilterError(ValueError):
+    """Raised when a filter value fails validation before the request is sent.
+
+    ``key`` is the offending filter key; ``errors`` are the underlying validation errors.
+    """
+
+    def __init__(self, key: str, errors: object) -> None:
+        self.key = key
+        self.errors = errors
+        super().__init__(f"invalid filter {key!r}: {errors}")

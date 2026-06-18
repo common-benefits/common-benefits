@@ -121,7 +121,13 @@ def test_filters_pass_through_without_plugin():
             }
         )
 
-    assert captured["body"]["filters"]["region"] == {"operator": "in", "value": ["PA"]}
+    body = captured["body"]
+    # "color" is a standard filter -> top level; "region" is unknown -> customFilters.
+    assert body["filters"]["color"] == {"operator": "eq", "value": "red"}
+    assert body["filters"]["customFilters"]["region"] == {
+        "operator": "in",
+        "value": ["PA"],
+    }
 
 
 def test_search_is_statically_typed():

@@ -2,19 +2,26 @@
 
 from __future__ import annotations
 
-from typing import Any, Mapping, Optional, TypeVar
+from typing import Any, ClassVar, Mapping, Optional, TypeVar
 
 from pydantic import BaseModel
 
+from ...schemas.filters import NumberRange, StringComparison
 from ..responses import ListResult, SearchResult
 from ..results import ParsedItem
-from .base import Resource
+from .base import FilterSpecMap, Resource
 
 TItem = TypeVar("TItem", bound=BaseModel)
 
 
 class Widgets(Resource[TItem]):
     """Typed widgets resource. Item type is supplied by the plugin via ``get_client``."""
+
+    #: Protocol default filters for widgets (mirrors ts-sdk WidgetDefaultFiltersSchema).
+    _standard_filters: ClassVar[FilterSpecMap] = {
+        "color": StringComparison,
+        "weight": NumberRange,
+    }
 
     def get(self, item_id: str) -> ParsedItem[TItem]:
         """Fetch a single widget by id."""

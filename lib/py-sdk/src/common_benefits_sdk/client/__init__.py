@@ -3,7 +3,7 @@
 from .auth import Auth
 from .base import BaseClient
 from .config import Config
-from .exceptions import APIError
+from .exceptions import APIError, FilterError
 from .facade import CommonBenefitsClient
 from .resources import Gadgets, Resource, Widgets
 from .responses import (
@@ -24,6 +24,7 @@ from .results import (
 
 __all__ = [
     "APIError",
+    "FilterError",
     "Auth",
     "BaseClient",
     "CommonBenefitsClient",

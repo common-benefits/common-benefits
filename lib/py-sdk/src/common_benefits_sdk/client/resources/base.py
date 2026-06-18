@@ -1,32 +1,53 @@
-"""The resource base: construction and reusable protected helpers.
+"""The resource base: construction, reusable helpers, and filter categorization.
 
 This base intentionally exposes no public verbs. Each concrete resource (``Widgets``,
 ``Gadgets``, and real resources such as ``Applications`` / ``Organizations``) declares its
 own public API (``get`` / ``list`` / ``search`` plus resource-specific verbs like
 ``submit`` or ``history``) by delegating to the ``_get`` / ``_list`` / ``_search`` helpers
 here. HTTP requests and pagination live on :class:`BaseClient`.
+
+``_search`` categorizes the flat ``filters`` bag the way the TS SDK does: keys matching the
+resource's standard (protocol) filters go to the top level; registered custom keys and ad
+hoc keys alike validate and nest under ``customFilters``. So custom filters pass through
+even with no plugin; invalid filter values raise :class:`FilterError` before the request.
 """
 
 from __future__ import annotations
 
-from typing import Any, Generic, Mapping, Optional, TypeVar
+from typing import Any, ClassVar, Generic, Mapping, Optional, TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
+from ...schemas.base import CommonBenefitsBaseModel
+from ...schemas.filters import DefaultFilter
 from ..base import BaseClient
+from ..exceptions import FilterError
 from ..responses import ListResult, SearchResult
 from ..results import ParsedItem, parse_batch, parse_item
 
 TItem = TypeVar("TItem", bound=BaseModel)
 
+# A registry of filter key -> the model that validates that key's value.
+FilterSpecMap = dict[str, type[CommonBenefitsBaseModel]]
+
 
 class Resource(Generic[TItem]):
     """Base for a typed API resource bound to one common-model item type."""
 
-    def __init__(self, http: BaseClient, item_schema: type[TItem], path: str) -> None:
+    #: Protocol-defined ("standard") filters for this resource; keys route to top level.
+    _standard_filters: ClassVar[FilterSpecMap] = {}
+
+    def __init__(
+        self,
+        http: BaseClient,
+        item_schema: type[TItem],
+        path: str,
+        custom_filters: Optional[FilterSpecMap] = None,
+    ) -> None:
         self._http = http
         self._item_schema = item_schema
         self._path = path
+        self._custom_filters: FilterSpecMap = custom_filters or {}
 
     def _get(self, item_id: str) -> ParsedItem[TItem]:
         """Fetch one item by id, wrapped in a ``ParsedItem``."""
@@ -57,7 +78,7 @@ class Resource(Generic[TItem]):
         """Search items, per-row parsed (POSTed to ``{path}/search``)."""
         body: dict[str, Any] = {}
         if filters:
-            body["filters"] = dict(filters)
+            body["filters"] = self._categorize(filters)
         if query is not None:
             body["search"] = query
         page_obj = self._http.fetch_many(
@@ -76,5 +97,31 @@ class Resource(Generic[TItem]):
             sort_info=page_obj.sort_info,
         )
 
+    # -- filter categorization -----------------------------------------------------------
 
-__all__ = ["Resource"]
+    def _categorize(self, filters: Mapping[str, Any]) -> dict[str, Any]:
+        """Split filters into standard (top-level) and custom (nested), validating each."""
+        standard: dict[str, Any] = {}
+        custom: dict[str, Any] = {}
+        for key, value in filters.items():
+            if key in self._standard_filters:
+                standard[key] = self._validate(self._standard_filters[key], key, value)
+            elif key in self._custom_filters:
+                custom[key] = self._validate(self._custom_filters[key], key, value)
+            else:
+                custom[key] = self._validate(DefaultFilter, key, value)
+        out: dict[str, Any] = dict(standard)
+        if custom:
+            out["customFilters"] = custom
+        return out
+
+    @staticmethod
+    def _validate(model: type[CommonBenefitsBaseModel], key: str, value: Any) -> Any:
+        try:
+            validated = model.model_validate(value)
+        except ValidationError as exc:
+            raise FilterError(key, exc.errors()) from exc
+        return validated.model_dump(by_alias=True, mode="json")
+
+
+__all__ = ["Resource", "FilterSpecMap"]
