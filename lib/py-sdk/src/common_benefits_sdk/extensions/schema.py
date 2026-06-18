@@ -30,14 +30,9 @@ from typing import (
     overload,
 )
 
-from pydantic import (
-    AliasGenerator,
-    BaseModel,
-    ConfigDict,
-    ValidationError,
-)
-from pydantic.alias_generators import to_camel
+from pydantic import BaseModel, ValidationError
 
+from ..schemas.base import CommonBenefitsBaseModel
 from ..schemas.fields import CustomField, CustomFieldType
 from ..schemas.models import GadgetCommon, WidgetCommon
 from .specs import PluginCustomFieldSpec
@@ -62,24 +57,13 @@ TCommon = TypeVar("TCommon", bound=BaseModel)
 T = TypeVar("T", bound=BaseModel)
 
 
-class _CamelModel(BaseModel):
-    """Base model that is camelCase on the wire and snake_case in code."""
-
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel,
-            serialization_alias=to_camel,
-        ),
-        populate_by_name=True,
-    )
-
-
-class CustomFieldSet(_CamelModel):
+class CustomFieldSet(CommonBenefitsBaseModel):
     """Base class an author subclasses to declare a schema's custom fields.
 
     Each field is declared as ``Optional[CustomField[V]] = Field(default=None,
     description=...)``. ``CustomField[V]`` is the single source of truth: ``V`` anchors both
-    ``field_type`` and the inspectable value type, so they cannot drift.
+    ``field_type`` and the inspectable value type, so they cannot drift. camelCase wire
+    names come from ``CommonBenefitsBaseModel``'s alias generator.
     """
 
 

@@ -4,7 +4,7 @@ from enum import StrEnum
 from typing import Any, Generic, Optional
 
 import typing_extensions as te
-from pydantic import ConfigDict, Field, HttpUrl
+from pydantic import Field, HttpUrl
 
 from .base import CommonBenefitsBaseModel
 
@@ -28,18 +28,14 @@ class CustomField(CommonBenefitsBaseModel, Generic[V]):
 
     Generic over its value type ``V`` (default ``Any``): the bare ``CustomField`` keeps
     the protocol's untyped-value behavior, while ``CustomField[int]`` (or a Pydantic
-    model) gives authors and consumers a concrete, inspectable ``value`` type.
-    ``populate_by_name`` plus the ``fieldType`` / ``schema`` aliases keep JSON I/O
-    camelCase while snake_case field-name construction type-checks.
+    model) gives authors and consumers a concrete, inspectable ``value`` type. camelCase
+    wire names (``fieldType``) come from the base model's alias generator; ``schema_url``
+    sets an explicit ``schema`` alias because that name is not derivable from the field.
     """
-
-    model_config = ConfigDict(populate_by_name=True)
 
     name: str = Field(..., description="Name of the custom field", min_length=1)
     field_type: CustomFieldType = Field(
         ...,
-        validation_alias="fieldType",
-        serialization_alias="fieldType",
         description="The JSON schema type used when de-serializing the `value` field",
     )
     schema_url: Optional[HttpUrl] = Field(

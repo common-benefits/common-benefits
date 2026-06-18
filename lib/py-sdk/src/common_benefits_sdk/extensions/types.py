@@ -5,7 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable, Generic, Literal, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
+
+from ..schemas.base import CommonBenefitsBaseModel
 
 T = TypeVar("T")
 
@@ -67,18 +69,14 @@ class TransformResult(Generic[T]):
     errors: list[TransformError]
 
 
-class PluginMeta(BaseModel):
+class PluginMeta(CommonBenefitsBaseModel):
     """Plugin identity and capability declaration.
 
     ``name`` and ``source_system`` are required so registries always have a label and a
     provenance string; ``version`` and ``capabilities`` are optional.
     """
 
-    model_config = ConfigDict(populate_by_name=True)
-
     name: str
-    source_system: str = Field(
-        validation_alias="sourceSystem", serialization_alias="sourceSystem"
-    )
+    source_system: str  # serialized as ``sourceSystem`` by the base alias generator
     version: str | None = None
     capabilities: list[PluginCapability] | None = None

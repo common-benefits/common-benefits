@@ -5,6 +5,9 @@ These stand in for real protocol models (e.g. ``Program``) until those land, mir
 custom-fields container ``CF``, so ``WidgetCommon[WidgetFields]`` is a fully concrete type
 the checker understands with no codegen. ``CF`` defaults to ``dict[str, CustomField]``, so
 the bare ``WidgetCommon`` keeps the protocol's untyped custom-fields behavior.
+
+camelCase-on-the-wire comes from ``CommonBenefitsBaseModel``'s alias generator, so these
+models declare snake_case fields with no per-field aliases.
 """
 
 from __future__ import annotations
@@ -12,8 +15,7 @@ from __future__ import annotations
 from typing import Generic, Optional
 
 import typing_extensions as te
-from pydantic import AliasGenerator, ConfigDict, Field
-from pydantic.alias_generators import to_camel
+from pydantic import Field
 
 from .base import CommonBenefitsBaseModel
 from .fields import CustomField
@@ -21,19 +23,7 @@ from .fields import CustomField
 CF = te.TypeVar("CF", default="dict[str, CustomField]")
 
 
-class _ExtensibleModel(CommonBenefitsBaseModel):
-    """Common config for extensible models: camelCase on the wire, snake_case in code."""
-
-    model_config = ConfigDict(
-        alias_generator=AliasGenerator(
-            validation_alias=to_camel,
-            serialization_alias=to_camel,
-        ),
-        populate_by_name=True,
-    )
-
-
-class WidgetCommon(_ExtensibleModel, Generic[CF]):
+class WidgetCommon(CommonBenefitsBaseModel, Generic[CF]):
     """The common Widget model, generic over its custom-fields container."""
 
     id: str = Field(..., description="Unique identifier for the widget")
@@ -49,7 +39,7 @@ class WidgetCommon(_ExtensibleModel, Generic[CF]):
     )
 
 
-class GadgetCommon(_ExtensibleModel, Generic[CF]):
+class GadgetCommon(CommonBenefitsBaseModel, Generic[CF]):
     """The common Gadget model (distinct shape from Widget)."""
 
     id: str = Field(..., description="Unique identifier for the gadget")

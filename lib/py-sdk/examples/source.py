@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from common_benefits_sdk.extensions import CustomField, CustomFieldSet
 from common_benefits_sdk.schemas.base import CommonBenefitsBaseModel
@@ -49,7 +49,9 @@ class GadgetFields(CustomFieldSet):
 # --- Legacy source-system models --------------------------------------------------------
 
 
-class SourceWidget(CommonBenefitsBaseModel):
+# Source models are the adopter's native shape, so they use a plain BaseModel and keep
+# their snake_case field names on the wire (no camelCase alias generator).
+class SourceWidget(BaseModel):
     """An adopter's native widget record, with field names that differ from the protocol."""
 
     widget_id: str
@@ -61,7 +63,7 @@ class SourceWidget(CommonBenefitsBaseModel):
     category: str
 
 
-class SourceGadget(CommonBenefitsBaseModel):
+class SourceGadget(BaseModel):
     """An adopter's native gadget record."""
 
     gadget_id: str
