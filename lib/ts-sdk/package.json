@@ -41,7 +41,8 @@
     "ci": "pnpm run checks && pnpm run build && pnpm run typespec && pnpm run test",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "examples": "pnpm dlx tsx examples/plugin-demo.ts && pnpm dlx tsx examples/transforms.ts"
   },
   "dependencies": {
     "zod": "catalog:"
