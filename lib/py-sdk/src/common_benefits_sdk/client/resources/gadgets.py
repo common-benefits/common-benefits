@@ -14,7 +14,12 @@ from typing import Any, ClassVar, Generic, Mapping, Optional, TypedDict, TypeVar
 import typing_extensions as te
 from pydantic import BaseModel
 
-from ...schemas.filters import FilterValue, GadgetFilters, StringComparison
+from ...schemas.filters import (
+    FilterValue,
+    GadgetFilters,
+    NumberComparison,
+    StringComparison,
+)
 from ..responses import ListResult, SearchResult
 from ..results import ParsedItem
 from .base import FilterSpecMap, Resource
@@ -35,6 +40,9 @@ class Gadgets(Resource[TItem], Generic[TItem, TFilters]):
     Generic over the parsed item type and the search-filters TypedDict (``GadgetFilters`` by
     default, or a plugin's registered extension). Both are supplied by ``get_client``.
     """
+
+    #: Protocol filters for the ``search`` verb (top-level keys; the rest pass through).
+    _standard_filters: ClassVar[FilterSpecMap] = {"size": NumberComparison}
 
     #: Protocol filters for the ``history`` verb (top-level keys; the rest pass through).
     _history_filters: ClassVar[FilterSpecMap] = {"actor": StringComparison}

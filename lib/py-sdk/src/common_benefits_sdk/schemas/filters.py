@@ -292,4 +292,6 @@ class WidgetFilters(TypedDict, total=False):
 
 
 class GadgetFilters(TypedDict, total=False):
-    """Standard filters for the gadgets search route (none defined yet)."""
+    """Standard filters for the gadgets search route."""
+
+    size: NumberComparison

@@ -149,6 +149,36 @@ def test_registered_route_filter_is_typed_and_passes_through():
     }
 
 
+def test_gadget_size_is_a_standard_search_filter():
+    captured: dict[str, Any] = {}
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        captured["body"] = json.loads(req.content) if req.content else None
+        return httpx.Response(
+            200,
+            json={
+                "items": [],
+                "paginationInfo": {
+                    "page": 1,
+                    "pageSize": 0,
+                    "totalItems": 0,
+                    "totalPages": 1,
+                },
+            },
+        )
+
+    config = Config(
+        base_url="https://example.test", transport=httpx.MockTransport(handler)
+    )
+    with functions_plugin.get_client(config) as client:
+        # `size` is the gadget search standard filter (top level); `vendor` is unknown.
+        client.gadgets.search(filters={"size": f.gt(10), "vendor": f.eq("acme")})
+
+    filters = captured["body"]["filters"]
+    assert filters["size"] == {"operator": "gt", "value": 10}
+    assert filters["customFilters"]["vendor"] == {"operator": "eq", "value": "acme"}
+
+
 def test_gadget_history_is_a_distinct_filterable_verb():
     captured: dict[str, Any] = {}
 
