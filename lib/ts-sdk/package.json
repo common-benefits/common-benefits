@@ -42,7 +42,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "examples": "pnpm dlx tsx examples/plugin-demo.ts && pnpm dlx tsx examples/transforms.ts"
+    "examples": "pnpm dlx tsx examples/custom-fields.ts && pnpm dlx tsx examples/custom-fields-mappings.ts && pnpm dlx tsx examples/custom-fields-functions.ts && pnpm dlx tsx examples/mappings-only.ts && pnpm dlx tsx examples/custom-filters.ts"
   },
   "dependencies": {
     "zod": "catalog:"
