@@ -9,17 +9,17 @@ import { z } from "zod";
 import type { CommonBenefitsClient } from "../../client/facade";
 import { GadgetBaseSchema, GadgetDefaultFiltersSchema } from "../../schemas/gadget";
 import { WidgetBaseSchema, WidgetDefaultFiltersSchema } from "../../schemas/widget";
-import {
-  EXTENSIBLE_SCHEMA_MAP,
-  type HasCustomFields,
-  type SchemaExtensions,
-  type SchemaOnly,
-  type SchemaWithTransforms,
-  type SchemaWithCustomFields,
+import { EXTENSIBLE_SCHEMA_MAP } from "../schemas/helpers";
+import type {
+  CustomFieldSpec,
+  SchemaExtensions,
+  SchemaOnly,
+  SchemaWithTransforms,
+  SchemaWithCustomFields,
 } from "../schemas";
-import type { PluginRoutes, ResolvedSearchFilters } from "../routes";
-import type { CustomFieldSpec } from "../specs";
-import type { ExtensibleSchemaName } from "../types";
+import type { ExtensibleSchemaName, HasCustomFields } from "../schemas/types";
+import type { PluginRoutes } from "../routes";
+import type { ResolvedSearchFilters } from "../routes/types";
 
 type WidgetBase = z.infer<typeof WidgetBaseSchema>;
 type WidgetDefaultFilters = z.input<typeof WidgetDefaultFiltersSchema>;

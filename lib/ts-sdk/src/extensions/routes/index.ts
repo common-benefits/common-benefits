@@ -1,63 +1,24 @@
 /**
- * The `routes` concern: registering the custom filters a search route accepts.
- * `withCustomFilters` builds the runtime Zod schema for a route's filter bag
- * from `CustomFilterSpec`s, `CUSTOM_FILTER_SCHEMA_MAP` bridges a filter family to
- * its value schema (in the schemas layer), and `f` builds `{operator, value}`
- * literals ergonomically. Mirrors `py-sdk`'s `extensions/routes.py`.
+ * The `routes` concern — public API: registering the custom filters a search
+ * route accepts (`withCustomFilters`), the route declaration types, and `f`
+ * (ergonomic `{operator, value}` builders). Mirrors `py-sdk`'s
+ * `extensions/routes.py`.
+ *
+ * Internal machinery lives alongside: `helpers.ts` (`CUSTOM_FILTER_SCHEMA_MAP`,
+ * `CustomFilterSchema`) and `types.ts` (the search-filter projection).
  */
 
 import { z } from "zod";
-import {
-  DateComparisonFilterSchema,
-  DateRangeFilterSchema,
-  MoneyComparisonFilterSchema,
-  MoneyRangeFilterSchema,
-  NumberArrayFilterSchema,
-  NumberComparisonFilterSchema,
-  NumberRangeFilterSchema,
-  StringArrayFilterSchema,
-  StringComparisonFilterSchema,
-} from "../../schemas/filters";
-import type { CustomFilterSpec } from "../specs";
-import type { CustomFilterType } from "../types";
-import type { WithCustomFiltersResult } from "./types";
+import { CUSTOM_FILTER_SCHEMA_MAP } from "./helpers";
+import type { CustomFilterSpec, WithCustomFiltersResult } from "./types";
 
 export type {
-  CustomFilterInput,
-  FilterInput,
+  CustomFilterSpec,
   PluginRoutes,
-  ResolvedCustomFilters,
-  ResolvedSearchFilters,
-  RouteFor,
   RouteMethods,
   RouteMethodSpec,
-  SearchFiltersInput,
   WithCustomFiltersResult,
 } from "./types";
-
-// ############################################################################
-// Filter family -> value schema (bridges to the schemas layer)
-// ############################################################################
-
-/**
- * Map of `CustomFilterType` → per-type Zod filter schema. `withCustomFilters()`
- * reads from this to build the runtime schema for a route's filter bag. Adding a
- * `CustomFilterType` requires the union member in `../types` plus an entry here.
- */
-export const CUSTOM_FILTER_SCHEMA_MAP = {
-  stringComparison: StringComparisonFilterSchema,
-  stringArray: StringArrayFilterSchema,
-  numberComparison: NumberComparisonFilterSchema,
-  numberArray: NumberArrayFilterSchema,
-  numberRange: NumberRangeFilterSchema,
-  dateComparison: DateComparisonFilterSchema,
-  dateRange: DateRangeFilterSchema,
-  moneyComparison: MoneyComparisonFilterSchema,
-  moneyRange: MoneyRangeFilterSchema,
-} as const satisfies Record<CustomFilterType, z.ZodTypeAny>;
-
-/** Looks up the Zod filter schema for a given `CustomFilterType`. */
-export type CustomFilterSchema<K extends CustomFilterType> = (typeof CUSTOM_FILTER_SCHEMA_MAP)[K];
 
 // ############################################################################
 // withCustomFilters()

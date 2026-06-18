@@ -10,9 +10,8 @@ import type { SchemaExtensions } from "../schemas";
 import { buildGetClient, resolveSchemas } from "./builder";
 import type { BuiltClient, ResolvedPluginSchemas } from "./types";
 
-export { buildGetClient } from "./builder";
-export type { ResolvedPluginSchemas, BuiltClient } from "./types";
-export type { BuildGetClientOptions } from "./builder";
+// `buildGetClient` / `ResolvedPluginSchemas` / `BuiltClient` are internal: they
+// back `definePlugin` and the `Plugin` type but are not part of the public API.
 
 /** Required metadata describing a plugin. */
 export interface PluginMeta {

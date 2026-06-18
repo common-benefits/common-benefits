@@ -1,14 +1,42 @@
 /**
- * Type machinery for the `routes` concern: the per-route filter declarations a
- * plugin registers (`PluginRoutes` / `RouteMethods`), the `withCustomFilters`
- * result type, and the projection that turns a route's registered filters into
- * the typed `filters` bag a resource's `search` accepts.
+ * Types for the `routes` concern: the filter vocabulary and spec, the per-route
+ * filter declarations a plugin registers (`PluginRoutes` / `RouteMethods`), the
+ * `withCustomFilters` result type, and the projection that turns a route's
+ * registered filters into the typed `filters` bag a resource's `search` accepts.
  */
 
 import type { z } from "zod";
-import type { CustomFilterSpec } from "../specs";
-import type { CustomFilterType } from "../types";
-import type { CustomFilterSchema } from "./index";
+import type { CustomFilterSchema } from "./helpers";
+
+// ############################################################################
+// Filter vocabulary (moved here from the shared extensions/types.ts + specs.ts)
+// ############################################################################
+
+/**
+ * The narrow set of filter families adopters can attach to a search route. Each
+ * key mirrors a per-type filter schema name (e.g. `"stringComparison"` ↔
+ * `StringComparisonFilterSchema`). `integer` flows through `numberComparison`.
+ */
+export type CustomFilterType =
+  | "stringComparison"
+  | "stringArray"
+  | "numberComparison"
+  | "numberArray"
+  | "numberRange"
+  | "dateComparison"
+  | "dateRange"
+  | "moneyComparison"
+  | "moneyRange";
+
+/** Specification for a custom filter on a search route. */
+export interface CustomFilterSpec {
+  /** Optional display name (defaults to the record key). */
+  name?: string;
+  /** The filter family — drives operator + value validation. */
+  filterType: CustomFilterType;
+  /** Optional description. */
+  description?: string;
+}
 
 // ############################################################################
 // Route declarations

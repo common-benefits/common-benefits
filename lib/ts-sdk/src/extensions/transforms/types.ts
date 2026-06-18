@@ -6,10 +6,9 @@
  */
 
 import { z } from "zod";
-import { EXTENSIBLE_SCHEMA_MAP } from "../schemas";
-import type { SchemaWithCustomFields } from "../schemas";
-import type { CustomFieldSpec } from "../specs";
-import type { ExtensibleSchemaName } from "../types";
+import { EXTENSIBLE_SCHEMA_MAP } from "../schemas/helpers";
+import type { CustomFieldSpec, SchemaWithCustomFields } from "../schemas";
+import type { ExtensibleSchemaName } from "../schemas/types";
 
 // ############################################################################
 // Result + error

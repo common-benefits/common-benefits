@@ -1,17 +1,55 @@
 /**
- * Type machinery for the `schemas` concern: the `withCustomFields` result type
- * and its value-inference utilities, the `HasCustomFields` constraint, and the
- * `SchemaInput` authoring union `definePlugin` accepts per model.
+ * Types for the `schemas` concern: the custom-field vocabulary and spec, the
+ * `withCustomFields` result type and its value-inference utilities, the
+ * `HasCustomFields` constraint, and the `SchemaInput` authoring union
+ * `definePlugin` accepts per model.
  */
 
 import { z } from "zod";
-import { CustomFieldSchema } from "../../schemas/fields";
+import { CustomFieldSchema, CustomFieldTypeEnum } from "../../schemas/fields";
 import type { Handler } from "../../utils/transformation";
-import type { CustomFieldSpec } from "../specs";
-import type { ExtensibleSchemaName } from "../types";
 import type { TransformResult } from "../transforms";
 
+// ############################################################################
+// Custom-field vocabulary (moved here from the shared extensions/types.ts)
+// ############################################################################
+
+/** JSON-schema type tag for a custom field's value. */
+export type CustomFieldType = z.infer<typeof CustomFieldTypeEnum>;
+
+/**
+ * Names of base models that support custom-field extensions. For this
+ * scaffolding the dummy `Widget` / `Gadget` schemas are registered; when the
+ * Programs route lands, `"Program"` joins.
+ */
+export type ExtensibleSchemaName = "Widget" | "Gadget";
+
 type CustomField = z.infer<typeof CustomFieldSchema>;
+
+/** Runtime object with an optional `customFields` property. */
+export interface ExtensibleObject {
+  customFields?: Record<string, CustomField> | null;
+}
+
+/**
+ * Specification for a custom field attached to an extensible base schema.
+ * `withCustomFields()` consumes a `Record<string, CustomFieldSpec>` keyed by
+ * field name and produces a Zod schema with a typed `customFields` slot.
+ */
+export interface CustomFieldSpec {
+  /** Optional display name (defaults to the record key). */
+  name?: string;
+  /** JSON-schema type for the field's value. */
+  fieldType: CustomFieldType;
+  /** Optional Zod schema validating `value` (defaults to a type-appropriate schema). */
+  value?: z.ZodTypeAny;
+  /** Optional description. */
+  description?: string;
+}
+
+// ############################################################################
+// HasCustomFields constraint
+// ############################################################################
 
 type CustomFieldsZodType = z.ZodType<Record<string, CustomField> | null | undefined>;
 

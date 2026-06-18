@@ -1,21 +1,27 @@
 /**
- * The `schemas` concern: extending an extensible base schema with typed custom
- * fields, the resolved schema-entry shapes (`SchemaWithTransforms` / `SchemaOnly`),
- * the registry of extensible models, and the helper for reading a custom-field
- * value off a returned item. Mirrors `py-sdk`'s `extensions/schema.py`.
+ * The `schemas` concern — public API: extending an extensible base schema with
+ * typed custom fields (`withCustomFields`), the resolved schema-entry shapes
+ * (`SchemaWithTransforms` / `SchemaOnly`), the author input types, and reading a
+ * custom-field value off a returned item. Mirrors `py-sdk`'s `extensions/schema.py`.
+ *
+ * Internal machinery lives alongside: `helpers.ts` (`EXTENSIBLE_SCHEMA_MAP`) and
+ * `types.ts` (`HasCustomFields`, the value-inference utilities).
  */
 
 import { z } from "zod";
 import { CustomFieldSchema } from "../../schemas/fields";
-import { WidgetBaseSchema } from "../../schemas/widget";
-import { GadgetBaseSchema } from "../../schemas/gadget";
-import type { CustomFieldSpec } from "../specs";
-import type { CustomFieldType, ExtensibleObject, ExtensibleSchemaName } from "../types";
 import type { TransformResult } from "../transforms";
-import type { HasCustomFields, SchemaMappings, SchemaWithCustomFields } from "./types";
+import type {
+  CustomFieldSpec,
+  CustomFieldType,
+  ExtensibleObject,
+  HasCustomFields,
+  SchemaMappings,
+  SchemaWithCustomFields,
+} from "./types";
 
 export type {
-  HasCustomFields,
+  CustomFieldSpec,
   SchemaExtensions,
   SchemaInput,
   SchemaMappings,
@@ -56,20 +62,6 @@ export interface SchemaOnly<TCommon extends z.ZodTypeAny> {
   /** Custom fields declared on the entry, if any. */
   customFields?: Record<string, CustomFieldSpec>;
 }
-
-// ############################################################################
-// EXTENSIBLE_SCHEMA_MAP — the registry of extensible models
-// ############################################################################
-
-/**
- * Maps each extensible model to its base Zod schema. `definePlugin()` and the
- * client builder use this to resolve plugin-declared extensions back to the
- * schemas they extend.
- */
-export const EXTENSIBLE_SCHEMA_MAP = {
-  Widget: WidgetBaseSchema,
-  Gadget: GadgetBaseSchema,
-} as const satisfies Record<ExtensibleSchemaName, HasCustomFields>;
 
 // ############################################################################
 // withCustomFields()
