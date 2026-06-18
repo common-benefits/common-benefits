@@ -4,7 +4,7 @@ version = "0.0.0"
 description = "Python SDK for the CommonBenefits protocol: codegen-free extensions, a typed client, and custom filters."
 authors = ["Agile Six"]
 readme = "README.md"
-packages = [{ include = "common_benefits_sdk" }]
+packages = [{ include = "common_benefits_sdk", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -21,7 +21,11 @@ ruff = ">=0.6,<0.16"
 [tool.pyright]
 pythonVersion = "3.11"
 typeCheckingMode = "basic"
-include = ["common_benefits_sdk", "examples", "tests"]
+include = ["src", "examples", "tests"]
+extraPaths = ["src", "."]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
 
 [build-system]
 requires = ["poetry-core"]
