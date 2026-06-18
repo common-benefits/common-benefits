@@ -30,7 +30,7 @@ from typing import (
     overload,
 )
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, TypeAdapter, ValidationError
 
 from ..schemas.base import CommonBenefitsBaseModel
 from ..schemas.fields import CustomField, CustomFieldType
@@ -47,10 +47,46 @@ __all__ = [
     "SchemaExtension",
     "SchemaOnly",
     "SchemaWithTransforms",
+    "get_custom_field_value",
     "resolve_custom_field_specs",
     "schema",
     "validate_into",
 ]
+
+TVal = TypeVar("TVal")
+
+
+def get_custom_field_value(
+    item: BaseModel,
+    key: str,
+    value_type: type[TVal],
+) -> Optional[TVal]:
+    """Read and validate a single custom field's value off a returned item.
+
+    Returns ``None`` when the item has no ``custom_fields``, when the named field is absent,
+    or when its value is ``None``; otherwise validates the value against ``value_type`` and
+    returns it (raising ``pydantic.ValidationError`` on a mismatch). Mirrors the TS SDK's
+    ``getCustomFieldValue``. Registered custom fields are already typed via ``CustomField[V]``;
+    this helper is for defensive or dynamic-key access.
+
+    ``custom_fields`` may be a ``dict`` (the bare model) or a ``CustomFieldSet`` (a typed
+    container); both a mapping lookup and attribute access are tried.
+    """
+    custom_fields = getattr(item, "custom_fields", None)
+    if custom_fields is None:
+        return None
+    field = (
+        custom_fields.get(key)
+        if isinstance(custom_fields, dict)
+        else getattr(custom_fields, key, None)
+    )
+    if field is None:
+        return None
+    value = getattr(field, "value", None)
+    if value is None:
+        return None
+    return TypeAdapter(value_type).validate_python(value)
+
 
 TSource = TypeVar("TSource", bound=BaseModel)
 TCommon = TypeVar("TCommon", bound=BaseModel)
