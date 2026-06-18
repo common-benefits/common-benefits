@@ -19,8 +19,10 @@
 import type { z } from "zod";
 import type { ExtensibleSchemaName } from "../../extensions/plugin-types";
 import { WidgetDefaultFiltersSchema } from "../../schemas/widget";
+import { GadgetDefaultFiltersSchema } from "../../schemas/gadget";
 import type { ResourceConstructor, ResourceMethod } from "./base";
 import { Widgets } from "./widgets";
+import { Gadgets } from "./gadgets";
 
 export type { ResourceMethod } from "./base";
 
@@ -31,6 +33,7 @@ export type { ResourceMethod } from "./base";
  */
 export const DEFAULT_FILTERS_MAP = {
   Widget: WidgetDefaultFiltersSchema,
+  Gadget: GadgetDefaultFiltersSchema,
 } as const satisfies Record<string, z.ZodTypeAny>;
 
 /** Name of a registered default-filters set. */
@@ -56,6 +59,11 @@ export const RESOURCE_REGISTRY = {
     resourceClass: Widgets,
     schemas: { get: "Widget", list: "Widget", search: "Widget" },
     defaultFilters: "Widget",
+  },
+  gadgets: {
+    resourceClass: Gadgets,
+    schemas: { get: "Gadget", list: "Gadget", search: "Gadget" },
+    defaultFilters: "Gadget",
   },
 } as const satisfies Record<string, ResourceRegistryEntry>;
 

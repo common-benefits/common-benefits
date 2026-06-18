@@ -18,10 +18,12 @@
 import { z } from "zod";
 import { Client } from "../client/client";
 import type { ClientConfig } from "../client/config";
-import type { ResourceMethod } from "../client/resources/base";
+import type { ResourceConstructor, ResourceMethod } from "../client/resources/base";
 import { DEFAULT_FILTERS_MAP, RESOURCE_REGISTRY } from "../client/resources/registry";
 import type { Widgets } from "../client/resources/widgets";
+import type { Gadgets } from "../client/resources/gadgets";
 import { WidgetBaseSchema, WidgetDefaultFiltersSchema } from "../schemas/widget";
+import { GadgetBaseSchema, GadgetDefaultFiltersSchema } from "../schemas/gadget";
 import type { ResolvedPluginSchemas } from "./define-plugin";
 import type { CustomFilterSchema } from "./filter-type-map";
 import type { CustomFilterType, PluginRoutes, SchemaExtensions } from "./plugin-types";
@@ -33,6 +35,8 @@ import { withCustomFilters } from "./with-custom-filters";
 
 type WidgetBase = z.infer<typeof WidgetBaseSchema>;
 type WidgetDefaultFilters = z.input<typeof WidgetDefaultFiltersSchema>;
+type GadgetBase = z.infer<typeof GadgetBaseSchema>;
+type GadgetDefaultFilters = z.input<typeof GadgetDefaultFiltersSchema>;
 
 /** Resolves the typed item type produced by a plugin schema entry. */
 type ResolvedItemType<
@@ -88,6 +92,7 @@ type SearchFiltersInput<TDefaults, TCustoms> = TDefaults &
 /** Type-level map of resource name → resource class. */
 interface ResourceClassMap {
   widgets: typeof Widgets;
+  gadgets: typeof Gadgets;
 }
 
 /** Resolves the precise resource instance type for a route key. */
@@ -104,15 +109,25 @@ type InstanceFor<
       > &
         Record<string, unknown>
     >
-  : never;
+  : K extends "gadgets"
+    ? Gadgets<
+        ResolvedItemType<TSchemas, "Gadget", GadgetBase>,
+        SearchFiltersInput<
+          GadgetDefaultFilters,
+          ResolvedCustomFilters<K extends keyof TRoutes ? TRoutes[K] : never>
+        > &
+          Record<string, unknown>
+      >
+    : never;
 
 /**
- * Mapped type producing each typed resource attached to the built client. For
- * each route key that names a registered resource class, resolves its precise
- * instance type (item type from `schemas`, filters type from `routes`).
+ * Mapped type producing each typed resource attached to the built client. Every
+ * registered resource is always present (mirroring the fixed slots on the
+ * Python facade), with its precise instance type resolved from `schemas` (item
+ * type) and `routes` (filters type).
  */
 export type ClientResources<TRoutes extends PluginRoutes, TSchemas extends SchemaExtensions> = {
-  [K in keyof TRoutes & keyof ResourceClassMap]: InstanceFor<K, TSchemas, TRoutes>;
+  [K in keyof ResourceClassMap]: InstanceFor<K, TSchemas, TRoutes>;
 };
 
 /** Final return type of `getClient(config)`. */
@@ -155,9 +170,11 @@ export function buildGetClient<
 
     const resourceMap: Record<string, unknown> = {};
 
-    for (const [resourceName, routeMethods] of Object.entries(routes ?? {})) {
-      const entry = RESOURCE_REGISTRY[resourceName as keyof typeof RESOURCE_REGISTRY];
-      if (!entry) continue;
+    // Every registered resource is always constructed (matching the fixed slots
+    // on the typed facade); `routes` only supplies the custom filters for
+    // resources that registered any.
+    for (const [resourceName, entry] of Object.entries(RESOURCE_REGISTRY)) {
+      const routeMethods = (routes ?? {})[resourceName];
 
       // Resolve each method's item schema by name through the plugin's resolved
       // schemas (rooted in EXTENSIBLE_SCHEMA_MAP); default filters by name
@@ -167,7 +184,7 @@ export function buildGetClient<
         return modelName ? resolvedSchemas[modelName]?.commonSchema : undefined;
       };
 
-      resourceMap[resourceName] = new entry.resourceClass({
+      resourceMap[resourceName] = new (entry.resourceClass as ResourceConstructor)({
         client,
         itemSchemas: {
           get: itemSchemaFor("get"),
@@ -181,7 +198,7 @@ export function buildGetClient<
       });
     }
 
-    return Object.assign(client, resourceMap) as BuiltClient<TRoutes, TSchemas>;
+    return Object.assign(client, resourceMap) as unknown as BuiltClient<TRoutes, TSchemas>;
   };
 }
 
