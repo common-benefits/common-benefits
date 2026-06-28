@@ -10,7 +10,9 @@ dict for ad hoc passthrough).
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Any, List, Literal, TypedDict, Union, overload
+from typing import Any, List, Literal, Union, overload
+
+from typing_extensions import TypedDict
 
 from .base import CommonBenefitsBaseModel
 
@@ -282,16 +284,22 @@ class f:
 #
 #     class MyWidgetFilters(WidgetFilters, total=False):
 #         region: StringArray
+#
+# Each is declared with ``extra_items=FilterValue`` (PEP 728): registered keys keep their
+# declared value type, while any ad hoc (unregistered) key is still accepted as long as its
+# value is a ``FilterValue``. That is what lets ``search(filters={...})`` type-check a
+# passthrough key like ``tier`` without giving up per-key checking on ``color`` / ``weight``.
+# Subclasses inherit ``extra_items``, so an author's extension keeps the same behavior.
 
 
-class WidgetFilters(TypedDict, total=False):
+class WidgetFilters(TypedDict, total=False, extra_items=FilterValue):
     """Standard filters for the widgets search route."""
 
     color: StringComparison
     weight: NumberRange
 
 
-class GadgetFilters(TypedDict, total=False):
+class GadgetFilters(TypedDict, total=False, extra_items=FilterValue):
     """Standard filters for the gadgets search route."""
 
     size: NumberComparison

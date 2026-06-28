@@ -7,7 +7,7 @@ from typing import Any, ClassVar, Generic, Mapping, Optional, TypeVar, cast
 import typing_extensions as te
 from pydantic import BaseModel
 
-from ...schemas.filters import FilterValue, NumberRange, StringComparison, WidgetFilters
+from ...schemas.filters import NumberRange, StringComparison, WidgetFilters
 from ..responses import ListResult, SearchResult
 from ..results import ParsedItem
 from .base import FilterSpecMap, Resource
@@ -21,8 +21,9 @@ class Widgets(Resource[TItem], Generic[TItem, TFilters]):
 
     Generic over the parsed item type and the search-filters TypedDict (``WidgetFilters`` by
     default, or a plugin's registered extension). Both are supplied by the plugin via
-    ``get_client``. ``search``'s ``filters`` accepts the registered TypedDict (registered
-    keys autocomplete) or any open mapping (extra keys pass through to ``customFilters``).
+    ``get_client``. ``search``'s ``filters`` takes the registered TypedDict: registered keys
+    autocomplete and are value-typed, while ad hoc keys still pass through to
+    ``customFilters`` via the TypedDict's ``extra_items=FilterValue`` (see ``schemas.filters``).
     """
 
     #: Protocol default filters for widgets (mirrors ts-sdk WidgetDefaultFiltersSchema).
@@ -44,7 +45,7 @@ class Widgets(Resource[TItem], Generic[TItem, TFilters]):
     def search(
         self,
         *,
-        filters: "Optional[TFilters | Mapping[str, FilterValue]]" = None,
+        filters: "Optional[TFilters]" = None,
         query: Optional[str] = None,
         page: Optional[int] = None,
         page_size: Optional[int] = None,

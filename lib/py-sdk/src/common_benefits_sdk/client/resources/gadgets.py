@@ -9,7 +9,7 @@ is identical to ``search``.
 
 from __future__ import annotations
 
-from typing import Any, ClassVar, Generic, Mapping, Optional, TypedDict, TypeVar, cast
+from typing import Any, ClassVar, Generic, Mapping, Optional, TypeVar, cast
 
 import typing_extensions as te
 from pydantic import BaseModel
@@ -28,8 +28,12 @@ TItem = TypeVar("TItem", bound=BaseModel)
 TFilters = te.TypeVar("TFilters", default=GadgetFilters)
 
 
-class GadgetHistoryFilters(TypedDict, total=False):
-    """Standard filters for the gadgets ``history`` route."""
+class GadgetHistoryFilters(te.TypedDict, total=False, extra_items=FilterValue):
+    """Standard filters for the gadgets ``history`` route.
+
+    ``extra_items=FilterValue`` (PEP 728) keeps ``actor`` value-typed while still letting ad
+    hoc keys pass through to ``customFilters`` (see ``schemas.filters``).
+    """
 
     actor: StringComparison
 
@@ -60,7 +64,7 @@ class Gadgets(Resource[TItem], Generic[TItem, TFilters]):
     def search(
         self,
         *,
-        filters: "Optional[TFilters | Mapping[str, FilterValue]]" = None,
+        filters: "Optional[TFilters]" = None,
         query: Optional[str] = None,
         page: Optional[int] = None,
         page_size: Optional[int] = None,
@@ -76,7 +80,7 @@ class Gadgets(Resource[TItem], Generic[TItem, TFilters]):
     def history(
         self,
         *,
-        filters: "Optional[GadgetHistoryFilters | Mapping[str, FilterValue]]" = None,
+        filters: "Optional[GadgetHistoryFilters]" = None,
         since: Optional[str] = None,
     ) -> SearchResult[TItem]:
         """Fetch a gadget's change history (POSTs to ``{path}/history``).
