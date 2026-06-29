@@ -40,7 +40,7 @@ class WidgetSearchFilters(WidgetFilters, total=False):
 
 
 routes_plugin = define_plugin(
-    PluginSchemas(Widget=schema(common_schema=WidgetCommon[WidgetFields])),
+    schemas=PluginSchemas(Widget=schema(common_schema=WidgetCommon[WidgetFields])),
     routes=Routes(widget=ResourceRoutes(search=RouteFilters[WidgetSearchFilters]())),
     meta=PluginMeta(name="widget routes plugin", source_system="acme-widgets"),
 )
@@ -70,7 +70,7 @@ def demo() -> None:
         result = client.widgets.search(
             filters={
                 "color": f.eq("red"),  # standard -> top level
-                "region": f.in_(["PA", "NJ"]),  # registered custom -> customFilters
+                "region": f.in_(["PA", "CA"]),  # registered custom -> customFilters
                 "tier": f.eq("gold"),  # ad hoc -> customFilters (passthrough)
             }
         )

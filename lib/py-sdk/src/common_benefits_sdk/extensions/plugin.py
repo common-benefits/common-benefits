@@ -22,9 +22,8 @@ import typing_extensions as te
 from pydantic import BaseModel
 
 from ..client import Auth, BaseClient, CommonBenefitsClient, Config, Gadgets, Widgets
-from ..schemas.filters import GadgetFilters, WidgetFilters
 from ..schemas.models import GadgetCommon, WidgetCommon
-from .routes import ResourceRoutes, RouteFilters, Routes
+from .routes import _RGadget, _RWidget, ResourceRoutes, RouteFilters, Routes
 from .schema import SchemaExtension, SchemaOnly, SchemaWithTransforms, schema
 from .types import PluginMeta
 
@@ -32,17 +31,12 @@ from .types import PluginMeta
 DefaultWidget = SchemaOnly[WidgetCommon]
 DefaultGadget = SchemaOnly[GadgetCommon]
 
-# Covariant slot carriers: a plugin whose slot holds a SchemaWithTransforms is usable
-# wherever the base SchemaExtension is expected, which is what get_client's projection relies
-# on. The route carriers default to each resource's standard filters.
+# Covariant schema slot carriers: a plugin whose slot holds a SchemaWithTransforms is usable
+# wherever the base SchemaExtension is expected, which is what get_client's projection relies on.
+# The covariant route carriers (_RWidget / _RGadget, defaulting to each resource's standard
+# filters) are defined once in routes.py and imported above, since Routes and Plugin share them.
 _TWidget = te.TypeVar("_TWidget", covariant=True, default=DefaultWidget)
 _TGadget = te.TypeVar("_TGadget", covariant=True, default=DefaultGadget)
-_RWidget = te.TypeVar(
-    "_RWidget", covariant=True, default="ResourceRoutes[RouteFilters[WidgetFilters]]"
-)
-_RGadget = te.TypeVar(
-    "_RGadget", covariant=True, default="ResourceRoutes[RouteFilters[GadgetFilters]]"
-)
 
 # Types get_client recovers from the plugin: per-slot item types and per-route filter types.
 TWItem = TypeVar("TWItem", bound=BaseModel)
