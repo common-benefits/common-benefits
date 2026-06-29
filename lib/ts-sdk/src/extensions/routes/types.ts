@@ -6,6 +6,7 @@
  */
 
 import type { z } from "zod";
+import type { ResourceName } from "../../client/resources/registry";
 import type { CustomFilterSchema, CustomFilterType } from "./helpers";
 
 // ############################################################################
@@ -37,7 +38,10 @@ export interface RouteMethodSpec {
 export type RouteMethods = Partial<Record<"search", RouteMethodSpec>>;
 
 /**
- * Top-level routes declaration.
+ * Top-level routes declaration. Keys are the closed set of registered resource
+ * names (`ResourceName`, derived from `RESOURCE_REGISTRY`), mirroring how
+ * `SchemaExtensions` keys are constrained to `ExtensibleSchemaName`. A misspelled
+ * resource is a compile error rather than a silently ignored route.
  *
  * @example
  * ```ts
@@ -46,7 +50,7 @@ export type RouteMethods = Partial<Record<"search", RouteMethodSpec>>;
  * } satisfies PluginRoutes;
  * ```
  */
-export type PluginRoutes = Partial<Record<string, RouteMethods>>;
+export type PluginRoutes = Partial<Record<ResourceName, RouteMethods>>;
 
 // ############################################################################
 // withCustomFilters result

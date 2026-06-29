@@ -91,6 +91,28 @@ async function _filterCallSiteGate(client: Built) {
 }
 void _filterCallSiteGate;
 
+// Route keys are the closed `ResourceName` set (like `schemas` keys are the
+// closed `ExtensibleSchemaName` set), so a misspelled resource or method is a
+// compile error rather than a silently ignored route.
+function _routeKeyTypoGate() {
+  definePlugin({
+    meta: { name: "demo", version: "0.0.1" },
+    routes: {
+      // @ts-expect-error "widgts" is not a registered resource name
+      widgts: { search: { filters: { tags: { filterType: "stringArray" } } } },
+    },
+  });
+
+  definePlugin({
+    meta: { name: "demo", version: "0.0.1" },
+    routes: {
+      // @ts-expect-error "serch" is not a valid route method
+      widgets: { serch: { filters: { tags: { filterType: "stringArray" } } } },
+    },
+  });
+}
+void _routeKeyTypoGate;
+
 // (c, cont.) The plugin's typed custom-field value reaches the call site, read
 // the way a consumer reads it. Dot access (`cf.legacyId.value`), bracket access
 // by literal name (`cf["legacyId"].value`), and a const-literal key all type the

@@ -15,7 +15,11 @@ import { z } from "zod";
 import { Client } from "../../client/client";
 import type { ClientConfig } from "../../client/config";
 import type { ResourceConstructor, ResourceMethod } from "../../client/resources/base";
-import { DEFAULT_FILTERS_MAP, RESOURCE_REGISTRY } from "../../client/resources/registry";
+import {
+  DEFAULT_FILTERS_MAP,
+  RESOURCE_REGISTRY,
+  type ResourceName,
+} from "../../client/resources/registry";
 import { withCustomFilters } from "../routes";
 import type { PluginRoutes } from "../routes";
 import { EXTENSIBLE_SCHEMA_MAP, type ExtensibleSchemaName } from "../registry";
@@ -163,7 +167,10 @@ export function buildGetClient<
     const resourceMap: Record<string, unknown> = {};
 
     for (const [resourceName, entry] of Object.entries(RESOURCE_REGISTRY)) {
-      const routeMethods = (routes ?? {})[resourceName];
+      // `resourceName` comes from the registry, so it is a `ResourceName`; the
+      // `Object.entries` key just widens to `string`. Cast it back to index the
+      // closed-key routes map.
+      const routeMethods = routes[resourceName as ResourceName];
 
       const itemSchemaFor = (method: ResourceMethod): z.ZodTypeAny | undefined => {
         const modelName = entry.schemas[method];
