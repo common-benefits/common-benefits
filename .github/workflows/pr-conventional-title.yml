@@ -30,6 +30,8 @@ jobs:
           scopes: |
             core
             sdk
+            ts-sdk
+            py-sdk
             website
           requireScope: false
           subjectPattern: ^[a-z].*[^.]$
