@@ -95,7 +95,11 @@ def test_filters_validated_at_call_site():
     with _client(handler) as client:
         with pytest.raises(FilterError):
             # color is a string-comparison filter; a number range is invalid for it.
-            client.widgets.search(filters={"color": f.between(1, 10)})
+            client.widgets.search(
+                filters={
+                    "color": f.between(1, 10)
+                }  # pyright: ignore[reportArgumentType]
+            )
 
 
 def test_unknown_filter_passes_through_to_custom_filters():

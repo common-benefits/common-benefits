@@ -104,7 +104,11 @@ def test_invalid_filter_value_raises_before_request():
     with _capture_client(captured) as client:
         # color is a standard string-comparison filter; a number range is invalid for it.
         with pytest.raises(FilterError):
-            client.widgets.search(filters={"color": f.between(1, 10)})
+            client.widgets.search(
+                filters={
+                    "color": f.between(1, 10)
+                }  # pyright: ignore[reportArgumentType]
+            )
     assert "body" not in captured  # raised before any request was sent
 
 
