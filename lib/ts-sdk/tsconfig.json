@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "Node16",
-    "moduleResolution": "Node16",
+    "module": "commonjs",
     "lib": ["ES2022"],
     "types": ["node"],
     "outDir": "./dist",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@tsp-output/*": ["./tsp-output/*"]
@@ -19,6 +19,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/**/*", "__tests__/**/*"],
+  "include": ["src/**/*", "__tests__/**/*", "examples/**/*"],
   "exclude": ["node_modules", "dist"]
 }

@@ -2,22 +2,22 @@
   "name": "@common-benefits/sdk",
   "version": "0.0.1",
   "description": "The CommonBenefits TypeScript SDK (Zod schemas generated from TypeSpec)",
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
     }
   },
   "files": [
     "dist",
     "!dist/**/*.test.*",
-    "!dist/**/*.spec.*"
+    "!dist/**/*.spec.*",
+    "!dist/examples"
   ],
   "license": "MIT",
   "keywords": [
@@ -41,7 +41,8 @@
     "ci": "pnpm run checks && pnpm run build && pnpm run typespec && pnpm run test",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "examples": "pnpm dlx tsx examples/custom-fields.ts && pnpm dlx tsx examples/custom-fields-mappings.ts && pnpm dlx tsx examples/custom-fields-functions.ts && pnpm dlx tsx examples/mappings-only.ts && pnpm dlx tsx examples/custom-filters.ts"
   },
   "dependencies": {
     "zod": "catalog:"
